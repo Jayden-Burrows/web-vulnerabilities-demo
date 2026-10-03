@@ -26,7 +26,7 @@
             The same features with each flaw fixed. Try the same attacks.
         </a>
 
-        <p><small>Demo logins: alice_demo / password &middot; bob_demo / 12345678</small></p>
+        <p><small>Demo logins: <code>guest</code> / <code>password</code></small></p>
     </main>
 </body>
 

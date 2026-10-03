@@ -9,13 +9,13 @@ start_secure_session();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Live Demo - Secure Site</title>
-    <link rel="stylesheet" href="/safe/css/style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
     <header class="app-header">
-        <a class="logo" href="index.php">Live Demo</a>
+        <a class="logo" href="/">Live Demo</a>
         <nav class="app-header-nav">
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a class="login" href="/safe/logout.php">Logout</a>
@@ -30,7 +30,8 @@ start_secure_session();
         <p class="corp-paragraph">
             This is the same site as the vulnerable version, with each flaw fixed. Try the exact attacks that worked
             on the vulnerable site (the same SQL injection, the same script in a post, the same ID tampering) and
-            compare what happens. The sections below explain what changed in the code.
+            compare what happens. The <code>Attacker tools</code> button gives you access to the same editable URL bar
+            and request sender as on the vulnerable site. The sections below explain what changed in the code.
         </p>
 
         <button class="accordion">SQL Injection &rarr; Prepared Statements</button>
@@ -88,6 +89,7 @@ start_secure_session();
         });
     </script>
     <script src="posts/js/create-post-modal.js"></script>
+    <?php include __DIR__ . '/../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

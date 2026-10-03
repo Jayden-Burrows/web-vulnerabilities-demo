@@ -3,6 +3,9 @@
 require __DIR__ . '/../../auth.php';
 
 require __DIR__ . '/../../db.php';
+
+require_login();
+
 $pdo = get_db();
 
 $userId = current_user_id();

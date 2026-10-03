@@ -29,7 +29,7 @@ function posts_query(array $overrides = []): string
 <body>
 
     <header class="app-header">
-        <a class="logo" href="/vulnerable/">Live Demo</a>
+        <a class="logo" href="/">Live Demo</a>
         <a href="../logout.php" class="logout">Logout</a>
     </header>
 
@@ -154,6 +154,7 @@ function posts_query(array $overrides = []): string
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>
+    <?php include __DIR__ . '/../../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

@@ -22,7 +22,7 @@ function posts_query(array $overrides = []): string
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Posts</title>
-    <link rel="stylesheet" href="/safe/css/style.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -30,7 +30,7 @@ function posts_query(array $overrides = []): string
 <body>
 
     <header class="app-header">
-        <a class="logo" href="/safe/">Live Demo</a>
+        <a class="logo" href="/">Live Demo</a>
         <a href="../logout.php" class="logout">Logout</a>
     </header>
 
@@ -156,6 +156,7 @@ function posts_query(array $overrides = []): string
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>
+    <?php include __DIR__ . '/../../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

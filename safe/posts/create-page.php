@@ -9,7 +9,7 @@ require_login();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Create Post</title>
-    <link rel="stylesheet" href="/safe/css/style.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -85,6 +85,7 @@ require_login();
                 .catch(error => console.error('Error fetching location:', error));
         });
     </script>
+    <?php include __DIR__ . '/../../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

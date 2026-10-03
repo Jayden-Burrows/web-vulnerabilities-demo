@@ -14,7 +14,7 @@ session_start();
 <body>
 
     <header class="app-header">
-        <a class="logo" href="index.php">Live Demo</a>
+        <a class="logo" href="/">Live Demo</a>
         <nav class="app-header-nav">
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a class="login" href="/vulnerable/logout.php">Logout</a>
@@ -48,6 +48,10 @@ session_start();
                 vulnerabilities in the site.
             </p>
             <p>When you're done, check out <code>safe/</code> to compare how the secure site behaves.</p>
+            <p>This website can't give you access to the browser URL bar or developer tools, so use the
+                <code>Attacker tools</code> button. This button gives you access to an URL bar that you can modify and
+                to a request sender.
+            </p>
         </div>
 
         <button class="accordion">SQL Injections</button>
@@ -182,7 +186,7 @@ session_start();
             });
         });
     </script>
-    <script src="posts/js/create-post-modal.js"></script>
+    <?php include __DIR__ . '/../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

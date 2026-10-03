@@ -157,7 +157,7 @@ function current_user_id(): int
         session_start();
     }
 
-    return (int) $_SESSION['user_id'];
+    return (int) $_SESSION['user_id'] ?? 0;
 }
 
 function get_visible_posts(PDO $pdo, array $filters = []): array

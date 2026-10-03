@@ -194,13 +194,13 @@ function get_visible_posts(PDO $pdo, array $filters = []): array
             WHERE posts.is_posted = 1
             GROUP BY posts.id';
 
-    $postDateSort = POST_DATE_SQL;
+    $post_date_sort = "substr(post_date, 7, 4) || '-' || substr(post_date, 1, 2) || '-' || substr(post_date, 4, 2)";
 
     $orderBy = match ($filters['sort'] ?? 'newest') {
-        'oldest' => $postDateSort . ' ASC',
+        'oldest' => $post_date_sort . ' ASC',
         'most-saved' => 'saves_count DESC',
         'least-saved' => 'saves_count ASC',
-        default => $postDateSort . ' DESC',
+        default => $post_date_sort . ' DESC',
     };
 
     $stmt = $pdo->prepare($sql . ' ORDER BY ' . $orderBy);
@@ -222,7 +222,7 @@ function get_post_authors(PDO $pdo): array
 
 function get_user_own_posts(PDO $pdo, int $userId): array
 {
-    $stmt = $pdo->prepare('SELECT * FROM posts WHERE author_id = ? AND is_posted = 1 ORDER BY ' . POST_DATE_SQL . ' DESC');
+    $stmt = $pdo->prepare('SELECT * FROM posts WHERE author_id = ? AND is_posted = 1 ORDER BY ' . post_date_sort . ' DESC');
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -234,7 +234,7 @@ function get_user_saved_posts(PDO $pdo, int $userId): array
          FROM posts
          JOIN saves ON saves.post_id = posts.id
          WHERE saves.user_id = ? AND posts.is_posted = 1
-         ORDER BY ' . str_replace('post_date', 'posts.post_date', POST_DATE_SQL) . ' DESC'
+         ORDER BY ' . str_replace('post_date', 'posts.post_date', post_date_sort) . ' DESC'
     );
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

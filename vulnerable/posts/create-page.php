@@ -85,6 +85,7 @@ require_login();
                 .catch(error => console.error('Error fetching location:', error));
         });
     </script>
+    <?php include __DIR__ . '/../../tools/attacker-tools.php'; ?>
 </body>
 
 </html>
