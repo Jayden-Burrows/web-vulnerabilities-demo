@@ -104,9 +104,24 @@ button:hover {
 /* ---------- Page styling --------- */
 
 .corp-header {
-    background: url('/images/background.jpg');
-    background-size: cover;
+    background: linear-gradient(-45deg, #47A992, #2b7161, #1e8449, #1b6e3c);
+    background-size: 400% 400%;
     padding: 40px 20px;
+    animation: gradient 8s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .corp-body {
@@ -336,13 +351,15 @@ button:hover {
 
 .login-side-content {
     margin: 0 auto;
-    background: url('/images/background.jpg');
-    background-size: cover;
+    background: linear-gradient(-45deg, #47A992, #2b7161, #1e8449, #1b6e3c);
+    background-size: 400% 400%;
+    padding: 40px 20px;
+    animation: gradient 8s ease infinite;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #482121;
+    color: white;
     border: none;
     border-radius: 16px 0 0 16px;
     padding: 16px;
@@ -352,7 +369,7 @@ button:hover {
     font-family: 'Marker', 'Quicksand', Helvetica, Arial;
     font-size: 1.25rem;
     font-weight: 600;
-    color: #482121;
+    color: white;
     margin-bottom: 8px;
 }
 
