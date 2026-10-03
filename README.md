@@ -7,6 +7,9 @@ The website is themed after a simple social media app where users can draft, cre
 
 - On the `safe/` path, these vulnerabilities are patched, and users can test how the website now prevents those attacks. The landing page contains details about how each flaw is fixed. 
 
+## Running it online
+Try checking out the website [here](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Jayden-Burrows/web-vulnerabilities-demo/refs/heads/main/playground/blueprint.json). The site runs through WordPress Playground which can be memory intensive, so opening the website on a laptop or desktop is ideal.
+
 ## Running it locally
 
 Requires PHP with `pdo_sqlite`. Clone this repo, and from this folder, run:
