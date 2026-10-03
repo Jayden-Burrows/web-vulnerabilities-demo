@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $matches = $result->fetchAll(PDO::FETCH_ASSOC);
 
         if (count($matches) > 0) {
-            $user = $matches[0]; 
+            $user = $matches[0];
             $loginResult = ['matchCount' => count($matches), 'user' => $user];
             $_SESSION['user_id'] = $user['id'];
 
@@ -52,6 +52,7 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Login</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"

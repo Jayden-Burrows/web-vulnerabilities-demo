@@ -6,6 +6,7 @@ session_start();
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Live Demo - Vulnerable Site</title>
     <link rel="stylesheet" href="/style.css">
 </head>
@@ -107,8 +108,10 @@ session_start();
             </details>
             <details class="hint">
                 <summary>Hint3: The answer</summary>
-                <p>Log in as <code>alice_demo</code> and open <code>posts/profile.php?draft_id=6</code>. This should open Bob's
-                    private draft. Editing it and pressing Save changes Bob's post when you navigate back to it. The delete request works the same
+                <p>Log in as <code>alice_demo</code> and open <code>posts/profile.php?draft_id=6</code>. This should
+                    open Bob's
+                    private draft. Editing it and pressing Save changes Bob's post when you navigate back to it. The
+                    delete request works the same
                     way.</p>
             </details>
         </div>

@@ -86,7 +86,7 @@ function seed_db(PDO $pdo): void
         [4, '/images/uploads/whale.jpeg', 'So large!', 'Atlanta, Georgia, USA', '06-20-2025', 1],
         [5, '/images/uploads/night-sky.JPG', 'a beautiful night for sure', 'Athens, Georgia, USA', '08-12-2026', 1],
         [5, '/images/uploads/moon.jpg', 'another beautiful night.', 'Athens, Georgia, USA', '08-14-2026', 1],
-        [6, '/images/uploads/opry.jpg', 'Exploring Seattle today.', 'Nashville, Tennessee, USA', '09-01-2026', 1],
+        [6, '/images/uploads/opry.jpg', 'Exploring Tennessee today.', 'Nashville, Tennessee, USA', '09-01-2026', 1],
         [6, '/images/uploads/ramblr.jpg', 'spooky season', 'Athens, Georgia, USA', '10-30-2026', 1],
         [7, '/images/uploads/sanford.jpg', 'I\'m ready for another awesome football season!', 'Athens, Georgia, USA', '09-10-2026', 1],
         [7, '/images/uploads/sky.jpeg; /images/uploads/sunset-clouds.jpg', 'The sky is so gorgeous today...', 'Athens, Georgia, USA', '09-18-2026', 1],

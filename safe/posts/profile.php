@@ -6,6 +6,7 @@ require __DIR__ . '/logic/profile-logic.php';
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Profile</title>
     <link rel="stylesheet" href="/safe/css/style.css">
     <link rel="stylesheet"
