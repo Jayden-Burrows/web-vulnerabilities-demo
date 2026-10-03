@@ -1,0 +1,20 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "landingPage": "/index.php",
+    "preferredVersions": {
+        "php": "8.3",
+        "wp": false
+    },
+    "steps": [
+        {
+            "step": "writeFiles",
+            "writeToPath": "/wordpress",
+            "filesTree": {
+                "resource": "git:directory",
+                "url": "https://github.com/Jayden-Burrows/web-vulnerabilities-demo.git",
+                "ref": "main",
+                "refType": "branch"
+            }
+        }
+    ]
+}
