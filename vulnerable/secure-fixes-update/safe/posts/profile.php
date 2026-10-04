@@ -9,7 +9,7 @@ require __DIR__ . '/logic/profile-logic.php';
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csrf_meta() ?>
     <title>Profile</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -18,8 +18,7 @@ require __DIR__ . '/logic/profile-logic.php';
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                class="logout">Logout</button></form>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit" class="logout">Logout</button></form>
     </header>
 
     <main class="drafts-page">
@@ -28,7 +27,8 @@ require __DIR__ . '/logic/profile-logic.php';
         <?php endif; ?>
         <div class="drafts-owner">
             <h2><?= e($owner['display_name'] ?? '') ?></h2>
-            <img src="<?= e($owner['profile_pic'] ?? '') ?>" alt="<?= e($owner['display_name'] ?? '') ?>">
+            <img src="<?= e($owner['profile_pic'] ?? '') ?>"
+                alt="<?= e($owner['display_name'] ?? '') ?>">
             <p class="username">@<?= e($owner['username'] ?? '') ?></p>
         </div>
 
@@ -114,7 +114,8 @@ require __DIR__ . '/logic/profile-logic.php';
                                         <label class="image-keep-item">
                                             <img src="<?= e($img) ?>" alt="draft image">
                                             <span>
-                                                <input type="checkbox" name="keep_images[]" value="<?= e($img) ?>" checked>
+                                                <input type="checkbox" name="keep_images[]" value="<?= e($img) ?>"
+                                                    checked>
                                                 Keep
                                             </span>
                                         </label>
@@ -185,8 +186,7 @@ require __DIR__ . '/logic/profile-logic.php';
 
                 <div class="post-content">
                     <p class="post-details">
-                        <button id="save-btn" data-post-id="<?= e($viewedPost['id']) ?>" <?php if ($isSaved == 1): ?>
-                                class="saved" <?php endif; ?>>
+                        <button id="save-btn" data-post-id="<?= e($viewedPost['id']) ?>" <?php if ($isSaved == 1): ?> class="saved" <?php endif; ?>>
                             <i class="fa-solid fa-thumbtack"></i>
                         </button>
                         <span>

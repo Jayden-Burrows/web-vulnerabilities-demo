@@ -7,6 +7,11 @@ $pdo = get_db();
 $loginError = '';
 $shownQuery = '';
 
+// Handle login submission.
+// SAFE VERSION:
+//  1. CSRF token: the form must come from THIS site (stops "login CSRF").
+//  2. The SQL text is fixed and has only a ? placeholder for the username.
+//  3. The password is checked with password_verify() against a salted bcrypt hash.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = str_param($_POST, 'uname');
     $psw = str_param($_POST, 'psw');
@@ -20,21 +25,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = authenticate($pdo, $uname, $psw);
 
             if ($user) {
-                session_regenerate_id(true);   
-                unset($_SESSION['csrf_token']);  
+                session_regenerate_id(true);   // new session ID on login (prevents session fixation)
+                unset($_SESSION['csrf_token']);  // and a fresh CSRF token for the new session
                 $_SESSION['user_id'] = $user['id'];
                 header('Location: /safe/posts/index.php');
                 exit;
             }
 
+            // Same message whether the username or the password was wrong.
             $loginError = 'Invalid username or password.';
         } catch (PDOException $e) {
+            // Log the real error server-side; show the visitor nothing useful.
             error_log('Login query failed: ' . $e->getMessage());
             $loginError = 'Something went wrong. Please try again.';
         }
     }
 }
 
+// Already logged in from an earlier request: skip the form.
 if (isset($_SESSION['user_id'])) {
     header('Location: /safe/posts/index.php');
     exit;
@@ -47,7 +55,7 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Login — Secure Corp</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>

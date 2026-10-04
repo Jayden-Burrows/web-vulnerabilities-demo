@@ -8,14 +8,17 @@ function start_secure_session(): void
     }
     session_set_cookie_params([
         'lifetime' => 0,
-        'path' => '/',
+        'path'     => '/',
         'httponly' => true,   // JavaScript (and therefore XSS) cannot read the session cookie
         'samesite' => 'Lax',  // not sent on cross-site POSTs
     ]);
     session_start();
 }
 
-
+/**
+ * Gate for every page and endpoint that needs a logged-in user.
+ * Pages redirect to the login form; JSON endpoints answer 401 instead.
+ */
 function require_login(bool $asJson = false): void
 {
     start_secure_session();
@@ -28,6 +31,13 @@ function require_login(bool $asJson = false): void
     }
 }
 
+
+/* ---------- CSRF protection (synchronizer token) ----------
+ * Every state-changing request must carry a secret token that is tied to the
+ * visitor's session. A forged request from another site can ride along on the
+ * session cookie, but it cannot READ this token, so it cannot include it.
+ * Forms send it in a hidden field; fetch() calls send it in an X-CSRF-Token header.
+ */
 function csrf_token(): string
 {
     start_secure_session();
@@ -52,9 +62,11 @@ function csrf_valid(): bool
     start_secure_session();
     $sent = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? '');
     $real = $_SESSION['csrf_token'] ?? '';
+    // hash_equals: constant-time comparison, so the token can't be guessed by timing.
     return is_string($sent) && $real !== '' && hash_equals($real, $sent);
 }
 
+/** Gate for JSON endpoints that change data. */
 function require_csrf(): void
 {
     if (!csrf_valid()) {

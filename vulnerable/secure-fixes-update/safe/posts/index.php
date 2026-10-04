@@ -11,6 +11,7 @@ $posts = get_visible_posts($pdo, $filters);
 
 function posts_query(array $overrides = []): string
 {
+    // Output is escaped at the call site with e().
     return http_build_query(array_merge($_GET, $overrides));
 }
 
@@ -23,7 +24,7 @@ function posts_query(array $overrides = []): string
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csrf_meta() ?>
     <title>Posts</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -32,8 +33,7 @@ function posts_query(array $overrides = []): string
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                class="logout">Logout</button></form>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit" class="logout">Logout</button></form>
     </header>
 
     <form method="get" class="posts-filter-bar">
@@ -106,8 +106,7 @@ function posts_query(array $overrides = []): string
 
                 <div class="post-content">
                     <p class="post-details">
-                        <button id="save-btn" data-post-id="<?= e($viewedPost['id']) ?>" <?php if ($isSaved == 1): ?>
-                                class="saved" <?php endif; ?>>
+                        <button id="save-btn"  data-post-id="<?= e($viewedPost['id']) ?>" <?php if ($isSaved == 1): ?> class="saved" <?php endif; ?>>
                             <i class="fa-solid fa-thumbtack"></i>
                         </button>
                         <span>

@@ -6,8 +6,13 @@ require_once __DIR__ . '/auth.php';
 
 use Ramsey\Uuid\Uuid;
 
+// Passwords are stored as salted bcrypt hashes (password_hash), never as plain
+// text or a bare SHA-256. Each hash embeds its own random salt and cost factor.
 const BCRYPT_COST = 10;
 
+// A valid hash of a random throwaway password. When a username doesn't exist we
+// still run password_verify() against this, so a login attempt takes about as
+// long either way and timing can't reveal which usernames are real.
 const DUMMY_PASSWORD_HASH = '$2y$10$U5bSIQGZjpZgA/Ts1p75vOBK1KOGPl37BMm.nTLDvNZKMcYF/emH2';
 
 function get_db(): PDO
@@ -62,6 +67,8 @@ function seed_db(PDO $pdo): void
         );
     ");
 
+    // Pre-computed so seeding is fast (bcrypt is deliberately slow). To make one:
+    //   php -r "echo password_hash('the-password', PASSWORD_BCRYPT, ['cost' => 10]);"
     $users = [
         ['Alice Croft', 'alice_demo', 'alice@example.test', '$2y$10$8RbDcwXw19ItZslwTZVjo.vF4CMjMURF/c/iW/JJJgX5GcTlCN7gu', '/images/profile_placeholder.png'],
         ['Bob DeBuilder', 'bob_demo', 'bob@example.test', '$2y$10$EXPb0NQQLLTf5/.1fDAAv.RskMJ49kevdz65Js2wWeruIlROLPomq', '/images/profile_placeholder.png'],
@@ -106,7 +113,7 @@ function seed_db(PDO $pdo): void
     ];
 
     $stmt = $pdo->prepare('INSERT INTO posts (id, author_id, img_url, msg, loc, post_date, is_posted) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    $postUuids = [];
+    $postUuids = []; // position in $posts (1-based) => uuid, so seeded saves can point at them
     foreach ($posts as $i => $p) {
         $postUuids[$i + 1] = Uuid::uuid4()->toString();
         $stmt->execute([$postUuids[$i + 1], ...$p]);
@@ -162,12 +169,19 @@ function seed_db(PDO $pdo): void
     }
 }
 
+/**
+ * Check a username + password. Returns ['id' => ..., 'username' => ...] or null.
+ * The username goes in as a bound parameter; the password is never put in SQL at
+ * all, it is compared in PHP with password_verify().
+ */
 function authenticate(PDO $pdo, string $username, string $password): ?array
 {
     $stmt = $pdo->prepare('SELECT id, username, pass FROM users WHERE username = ?');
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // bcrypt only reads the first 72 bytes, and nobody needs a 10 KB password:
+    // refuse absurd lengths instead of spending CPU on them.
     if (strlen($password) > 256) {
         return null;
     }
@@ -179,6 +193,7 @@ function authenticate(PDO $pdo, string $username, string $password): ?array
         return null;
     }
 
+    // If we ever raise BCRYPT_COST, upgrade each hash the next time its owner logs in.
     if (password_needs_rehash($hash, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST])) {
         $upgrade = $pdo->prepare('UPDATE users SET pass = ? WHERE id = ?');
         $upgrade->execute([password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), $user['id']]);
@@ -194,11 +209,18 @@ function current_user_id(): int
     return (int) ($_SESSION['user_id'] ?? 0);
 }
 
+/** True if $id looks like a UUID. Cheap guard before touching the database. */
 function is_post_id(string $id): bool
 {
     return Uuid::isValid($id);
 }
 
+/**
+ * Fetch a post only if it belongs to $userId. This is THE ownership check:
+ * every read/modify/delete of a draft goes through it (or has
+ * "AND author_id = ?" in its SQL), so a guessed or leaked ID is useless.
+ * $isPosted: 1 = published only, 0 = drafts only, null = either.
+ */
 function get_owned_post(PDO $pdo, string $postId, int $userId, ?int $isPosted = null): array|false
 {
     $sql = 'SELECT * FROM posts WHERE id = ? AND author_id = ?';
@@ -212,6 +234,7 @@ function get_owned_post(PDO $pdo, string $postId, int $userId, ?int $isPosted = 
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+/** SQL expression turning the stored MM-DD-YYYY text into sortable YYYY-MM-DD. */
 const POST_DATE_SQL = "substr(post_date, 7, 4) || '-' || substr(post_date, 1, 2) || '-' || substr(post_date, 4, 2)";
 
 function get_visible_posts(PDO $pdo, array $filters = []): array
@@ -224,11 +247,13 @@ function get_visible_posts(PDO $pdo, array $filters = []): array
 
     $postDateSort = POST_DATE_SQL;
 
+    // Allow-list: the sort value only ever selects one of these fixed strings;
+    // user input is never concatenated into the SQL.
     $orderBy = match ($filters['sort'] ?? 'newest') {
-        'oldest' => $postDateSort . ' ASC',
-        'most-saved' => 'saves_count DESC',
+        'oldest'      => $postDateSort . ' ASC',
+        'most-saved'  => 'saves_count DESC',
         'least-saved' => 'saves_count ASC',
-        default => $postDateSort . ' DESC',
+        default       => $postDateSort . ' DESC',
     };
 
     $stmt = $pdo->prepare($sql . ' ORDER BY ' . $orderBy);

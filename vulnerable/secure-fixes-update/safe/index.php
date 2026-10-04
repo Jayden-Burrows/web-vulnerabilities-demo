@@ -10,7 +10,7 @@ start_secure_session();
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csrf_meta() ?>
     <title>Secure Corp — Live Demo</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -19,8 +19,7 @@ start_secure_session();
         <a class="logo" href="index.php">Live Demo</a>
         <nav class="app-header-nav">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <form method="post" action="logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                        class="login">Logout</button></form>
+                <form method="post" action="logout.php" class="logout-form"><?= csrf_field() ?><button type="submit" class="login">Logout</button></form>
             <?php else: ?>
                 <a class="login" href="login.php">Login</a>
             <?php endif; ?>
@@ -32,9 +31,7 @@ start_secure_session();
         <p class="corp-paragraph">
             This is the same site as the vulnerable version, with each flaw fixed. Try the exact attacks that worked
             on the vulnerable site (the same SQL injection, the same script in a post, the same ID tampering) and
-            compare what happens. The <strong>Attacker tools</strong> button (bottom right) gives you the same editable
-            address bar and request sender as on the vulnerable site. The sections below explain what changed in the
-            code.
+            compare what happens. The <strong>Attacker tools</strong> button (bottom right) gives you the same editable address bar and request sender as on the vulnerable site. The sections below explain what changed in the code.
         </p>
 
         <button class="accordion">SQL Injection &rarr; Prepared Statements</button>
@@ -52,12 +49,10 @@ start_secure_session();
         <div class="panel">
             <p><strong>Before:</strong> posts and drafts were looked up by a sequential number, and nothing checked
                 whether the record belonged to the logged-in user, so changing <code>?draft_id=4</code> to
-                <code>5</code> showed (and could edit or delete) someone else's content.
-            </p>
+                <code>5</code> showed (and could edit or delete) someone else's content.</p>
             <p><strong>After (the real fix):</strong> every read, edit, publish and delete of a draft includes
                 <code>AND author_id = ?</code> with the <em>session's</em> user ID, and a record that isn't yours
-                gets the same "not found" as one that doesn't exist.
-            </p>
+                gets the same "not found" as one that doesn't exist.</p>
             <p><strong>After (defense in depth):</strong> post IDs are random UUIDs instead of 1, 2, 3&hellip;, so IDs
                 can't be guessed by counting. UUIDs alone are not authorization, which is why the checks above
                 still exist.</p>
@@ -70,8 +65,7 @@ start_secure_session();
             <p><strong>After:</strong> every value that comes from the database or the request goes through
                 <code>htmlspecialchars()</code> (wrapped in a small <code>e()</code> helper) before it is printed,
                 which turns <code>&lt;</code> into <code>&amp;lt;</code> so it shows up as text. The session cookie is
-                also marked <code>HttpOnly</code>, so scripts can't read it even if one slipped through.
-            </p>
+                also marked <code>HttpOnly</code>, so scripts can't read it even if one slipped through.</p>
         </div>
 
         <button class="accordion">Password Storage &rarr; bcrypt</button>
@@ -95,8 +89,7 @@ start_secure_session();
             <p><strong>After:</strong> every state-changing request must also carry a random, per-session token (a
                 hidden form field, or an <code>X-CSRF-Token</code> header for <code>fetch()</code>), checked with
                 <code>hash_equals()</code>. Another site can ride along on your cookie but can't read the token. The
-                session cookie is also <code>SameSite=Lax</code>, and logout is now a POST form instead of a link.
-            </p>
+                session cookie is also <code>SameSite=Lax</code>, and logout is now a POST form instead of a link.</p>
             <p>Try it: in Attacker tools &rarr; <em>Send request</em>, untick &ldquo;Include my CSRF token&rdquo; and
                 send the request. You get a 403 before the server even looks at the post ID.</p>
         </div>

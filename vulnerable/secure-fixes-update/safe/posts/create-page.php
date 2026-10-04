@@ -10,7 +10,7 @@ require_login();
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <?= csrf_meta() ?>
     <title>Create Post</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -19,8 +19,7 @@ require_login();
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                class="logout">Logout</button></form>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit" class="logout">Logout</button></form>
     </header>
 
     <main class="create-form">

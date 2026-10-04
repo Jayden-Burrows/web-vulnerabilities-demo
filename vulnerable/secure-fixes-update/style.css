@@ -1,12 +1,31 @@
+/* ==========================================================================
+   Web Vulnerability Demo — single stylesheet for the landing page,
+   /vulnerable and /safe.
+
+   1  Tokens (:root)        7  Posts grid + post modal
+   2  Fonts                 8  Profile, drafts, create forms
+   3  Base + forms          9  Modals
+   4  Header + bottom nav  10  Responsive + motion preferences
+   5  Landing + accordion  11  Attacker tools drawer
+   6  Login
+
+   Change a color, font or size in :root and it changes everywhere.
+   ========================================================================== */
+
+
+/* ---------- 1. Tokens ---------- */
 :root {
-  --brand-900: #1e1b4b;
+  /* Palette: indigo + violet, with a pink accent */
+  --brand-900: #1e1b4b;    /* deep indigo: header, nav, dark surfaces */
   --primary-500: #6366f1;
-  --primary-600: #4f46e5;
+  --primary-600: #4f46e5;  /* white text on this passes WCAG AA */
   --primary-700: #4338ca;
   --violet-600: #7c3aed;
   --pink-500: #ec4899;
   --pink-600: #db2777;
   --shadow-rgb: 30, 27, 75;
+
+  /* Semantic colors */
   --color-bg: #f7f7fd;
   --color-bg-grad: #ebe9fb;
   --color-glow-1: rgba(99, 102, 241, 0.16);
@@ -33,9 +52,12 @@
   --color-nav-bg: rgba(30, 27, 75, 0.92);
   --color-focus: var(--primary-500);
   --color-focus-ring: rgba(99, 102, 241, 0.35);
+
+  /* Typography */
   --font-body: 'Quicksand', 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-display: 'Marker', 'Quicksand', Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
   --text-xs: 0.8125rem;
   --text-sm: 0.9rem;
   --text-base: 1rem;
@@ -43,12 +65,16 @@
   --text-lg: 1.3rem;
   --text-xl: clamp(1.4rem, 1.1rem + 1.2vw, 1.8rem);
   --text-2xl: clamp(1.9rem, 1.3rem + 2.4vw, 2.6rem);
+
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
+
   --leading-tight: 1.2;
   --leading-base: 1.6;
+
+  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -58,6 +84,8 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
+
+  /* Shape + depth */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 18px;
@@ -65,18 +93,25 @@
   --shadow-sm: 0 1px 3px rgba(var(--shadow-rgb), 0.14);
   --shadow-md: 0 6px 18px rgba(var(--shadow-rgb), 0.16);
   --shadow-lg: 0 16px 44px rgba(var(--shadow-rgb), 0.28);
+
+  /* Layout */
   --width-content: 900px;
   --width-reading: 720px;
   --width-form: 480px;
   --width-post: 420px;
   --bottom-nav-height: 52px;
   --thumb-min: 120px;
+
+  /* Motion + stacking */
   --transition: 200ms ease;
   --z-nav: 5;
   --z-tools: 6;
   --z-modal: 10;
 }
 
+
+/* ---------- 2. Fonts ---------- */
+/* Relative URLs resolve from this file, so they keep working under any sub-path. */
 @font-face {
   font-family: 'Marker';
   src: url('Permanent_Marker/PermanentMarker-Regular.ttf');
@@ -90,6 +125,8 @@
   font-display: swap;
 }
 
+
+/* ---------- 3. Base + forms ---------- */
 *,
 *::before,
 *::after {
@@ -117,9 +154,7 @@ body {
   line-height: var(--leading-base);
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   line-height: var(--leading-tight);
   font-weight: var(--weight-bold);
 }
@@ -160,7 +195,7 @@ select {
   background: var(--color-surface);
   color: inherit;
   font: inherit;
-  font-size: max(16px, 1rem);
+  font-size: max(16px, 1rem); /* 16px minimum stops iOS Safari zooming in on focus */
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
@@ -221,6 +256,8 @@ button:disabled {
   font-weight: var(--weight-bold);
 }
 
+
+/* ---------- 4. Header + bottom nav ---------- */
 .app-header {
   display: flex;
   align-items: center;
@@ -279,6 +316,7 @@ button:disabled {
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* Secure site: logout is a POST form (with CSRF token) instead of a link */
 .logout-form {
   display: inline-flex;
   margin: 0;
@@ -368,6 +406,8 @@ button:disabled {
   font-size: var(--text-lg);
 }
 
+
+/* ---------- 5. Landing + accordion + hints ---------- */
 .corp-body,
 main:not([class]) {
   max-width: var(--width-reading);
@@ -392,6 +432,7 @@ main:not([class]) {
   color: var(--color-link);
 }
 
+/* Landing page: <main> with no class, h1, p, and two a.card links */
 main:not([class]) {
   padding-bottom: var(--space-12);
 }
@@ -405,7 +446,7 @@ main:not([class]) h1 {
   font-size: var(--text-2xl);
 }
 
-main:not([class])>p {
+main:not([class]) > p {
   margin: var(--space-4) 0 var(--space-6);
   color: var(--color-text-muted);
 }
@@ -479,6 +520,7 @@ main:not([class]) small {
   }
 }
 
+/* Accordion (JS toggles .panel-open on the button and max-height on the panel) */
 .accordion {
   display: flex;
   align-items: center;
@@ -526,15 +568,15 @@ main:not([class]) small {
   transition: max-height 0.25s ease-out;
 }
 
-.panel-open+.panel {
+.panel-open + .panel {
   box-shadow: var(--shadow-sm);
 }
 
-.panel> :first-child {
+.panel > :first-child {
   margin-top: var(--space-4);
 }
 
-.panel> :last-child {
+.panel > :last-child {
   margin-bottom: var(--space-4);
 }
 
@@ -567,6 +609,8 @@ main:not([class]) small {
   padding: var(--space-3) var(--space-4);
 }
 
+
+/* ---------- 6. Login ---------- */
 .login-page {
   position: absolute;
   top: 50%;
@@ -624,7 +668,7 @@ main:not([class]) small {
   padding-left: 2.75rem;
 }
 
-.input-icon-wrap>i {
+.input-icon-wrap > i {
   position: absolute;
   top: 50%;
   left: var(--space-4);
@@ -701,6 +745,7 @@ main:not([class]) small {
   text-shadow: 0 1px 3px rgba(var(--shadow-rgb), 0.35);
 }
 
+/* Vulnerable-login SQL debug panel */
 .sql-debug {
   margin-top: var(--space-4);
   padding: var(--space-3) var(--space-4);
@@ -747,6 +792,8 @@ main:not([class]) small {
   padding: var(--space-4);
 }
 
+
+/* ---------- 7. Posts grid + post modal ---------- */
 .posts-filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -971,6 +1018,8 @@ main:not([class]) small {
   transition: transform var(--transition), color var(--transition);
 }
 
+
+/* ---------- 8. Profile, drafts, create forms ---------- */
 .profile-tabs {
   display: flex;
   gap: var(--space-1);
@@ -1186,6 +1235,8 @@ main:not([class]) small {
   font-size: inherit;
 }
 
+
+/* ---------- 9. Modals ---------- */
 .modal {
   position: fixed;
   inset: 0;
@@ -1279,6 +1330,8 @@ main:not([class]) small {
   }
 }
 
+
+/* ---------- 10. Responsive + motion preferences ---------- */
 @media (max-width: 800px) {
   .login-page {
     flex-direction: column;
@@ -1316,7 +1369,6 @@ main:not([class]) small {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -1327,6 +1379,7 @@ main:not([class]) small {
   }
 }
 
+/* ---------- 11. Attacker tools drawer (tools/attacker-tools.php) ---------- */
 .tools-toggle {
   position: fixed;
   right: var(--space-4);
@@ -1463,19 +1516,19 @@ main:not([class]) small {
 }
 
 .tools-panel .tools-row button,
-.tools-panel .tools-form>button {
+.tools-panel .tools-form > button {
   width: auto;
   margin: 0;
   padding: var(--space-3) var(--space-5);
   background: var(--color-accent);
 }
 
-.tools-panel .tools-form>button {
+.tools-panel .tools-form > button {
   align-self: flex-start;
 }
 
 .tools-panel .tools-row button:hover,
-.tools-panel .tools-form>button:hover {
+.tools-panel .tools-form > button:hover {
   background: var(--pink-600);
 }
 

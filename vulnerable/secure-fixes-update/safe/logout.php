@@ -2,6 +2,8 @@
 require __DIR__ . '/auth.php';
 start_secure_session();
 
+// Logging out changes state, so it is POST + CSRF token only. A plain link or an
+// <img src="logout.php"> on another site can no longer log a visitor out.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /safe/index.php');
     exit;

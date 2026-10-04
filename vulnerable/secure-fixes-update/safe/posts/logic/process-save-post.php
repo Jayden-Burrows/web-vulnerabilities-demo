@@ -24,12 +24,15 @@ if (!in_array($action, ['insert', 'delete'], true) || !is_post_id($postId)) {
 try {
     $pdo = get_db();
 
+    // AUTHORIZATION: you can only save posts you are allowed to see, i.e. published ones.
+    // (Without this, anyone could "save" someone's draft just by guessing its ID.)
     $check = $pdo->prepare('SELECT 1 FROM posts WHERE id = ? AND is_posted = 1');
     $check->execute([$postId]);
     if (!$check->fetchColumn()) {
         json_fail('Post not found.', 404);
     }
 
+    // The saves row is always keyed to the *logged-in* user, never to a user ID from the request.
     if ($action === 'insert') {
         $stmt = $pdo->prepare('INSERT OR IGNORE INTO saves (user_id, post_id) VALUES (?, ?)');
     } else {

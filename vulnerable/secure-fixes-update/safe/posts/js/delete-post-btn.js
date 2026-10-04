@@ -3,6 +3,8 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? 
 const deleteBtn = document.getElementById('delete-btn');
 
 if (deleteBtn) {
+    // The post ID lives in a data attribute (already HTML-escaped by the server),
+    // not inside an inline onclick="..." JavaScript string.
     deleteBtn.addEventListener('click', () => deletePost(deleteBtn.dataset.postId));
 }
 
