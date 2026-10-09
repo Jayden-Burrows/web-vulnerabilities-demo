@@ -1,5 +1,3 @@
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-
 const saveBtn = document.getElementById('save-btn');
 
 if (saveBtn) {
@@ -15,8 +13,7 @@ async function savePost(postId) {
         const response = await fetch(`logic/process-save-post.php?action=${action}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': csrfToken
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ post_id: postId })
         });

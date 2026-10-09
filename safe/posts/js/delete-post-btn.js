@@ -1,5 +1,3 @@
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-
 const deleteBtn = document.getElementById('delete-btn');
 
 if (deleteBtn) {
@@ -13,7 +11,7 @@ async function deletePost(postId) {
     try {
         const response = await fetch('logic/process-post.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ post_id: postId, action: 'delete' })
         });
         const data = await response.json();

@@ -8,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_login(true);
-require_csrf();
 $userId = current_user_id();
 
 $input = json_decode(file_get_contents('php://input'), true);

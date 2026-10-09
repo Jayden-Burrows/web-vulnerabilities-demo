@@ -6,10 +6,6 @@ require_once __DIR__ . '/auth.php';
 
 use Ramsey\Uuid\Uuid;
 
-const BCRYPT_COST = 10;
-
-const DUMMY_PASSWORD_HASH = '$2y$10$U5bSIQGZjpZgA/Ts1p75vOBK1KOGPl37BMm.nTLDvNZKMcYF/emH2';
-
 function get_db(): PDO
 {
     $dataDir = __DIR__ . '/data';
@@ -63,16 +59,17 @@ function seed_db(PDO $pdo): void
     ");
 
     $users = [
-        ['Alice Croft', 'alice_demo', 'alice@example.test', '$2y$10$8RbDcwXw19ItZslwTZVjo.vF4CMjMURF/c/iW/JJJgX5GcTlCN7gu', '/images/profile_placeholder.png'],
-        ['Bob DeBuilder', 'bob_demo', 'bob@example.test', '$2y$10$EXPb0NQQLLTf5/.1fDAAv.RskMJ49kevdz65Js2wWeruIlROLPomq', '/images/profile_placeholder.png'],
-        ['Carol Bell', 'carol_demo', 'carol@example.test', '$2y$10$Fk3D0eqKcneqPkIUQY/YcujU/AyKsyXnHqZE/KR61KKApQaKn6Zom', '/images/profile_placeholder.png'],
-        ['Jimmy Carter', 'jim_demo', 'jim@example.test', '$2y$10$VjjVN3IXtKJbpAax77XiEO2d2DNkS.wXEvHXz9zIYev6yRyZhsCFu', '/images/profile_placeholder.png'],
-        ['Eva Green', 'eva_demo', 'eva@example.test', '$2y$10$rAg.adLfb9MPuzGtjLt/xudw458s8nN16LxR2ymR7Vn3Z1IucgXMu', '/images/profile_placeholder.png'],
-        ['Frank Wright', 'frank_demo', 'frank@example.test', '$2y$10$J7lDpEM8D3Ct45vJaq0zmuc0TB9mVkmv00oayrwqVYkMU.6gi/AFK', '/images/profile_placeholder.png'],
-        ['Grace Hopper', 'grace_demo', 'grace@example.test', '$2y$10$JQLJLSGl7j.nNOdFi5LqW.j9bkmvUkwdgDEhQJBzFHqamSC1VU17m', '/images/profile_placeholder.png'],
-        ['Hank Schrader', 'hank_demo', 'hank@example.test', '$2y$10$KXzbjVAvgGx91mVSe5kGk.zHVdF6ULB7yIYBdGdgSVJeEhdO/bWXm', '/images/profile_placeholder.png'],
-        ['Ivy Chen', 'ivy_demo', 'ivy@example.test', '$2y$10$O2qTpwe.1GxjGQ2Shm/mLe2SE6Zcy0anism31Q3Fb/AtO21mqIfCe', '/images/profile_placeholder.png'],
-        ['Jack Ryan', 'jack_demo', 'jack@example.test', '$2y$10$0krgkHvrPLFYwZ2kAdUzWeosY9o29QlkHLOdpiu3vfGNzJyL2AQZC', '/images/profile_placeholder.png'],
+        ['Alice Croft', 'alice_demo', 'alice@example.test', hash('sha256', 'password'), '/images/profile_placeholder.png'],
+        ['Bob DeBuilder', 'bob_demo', 'bob@example.test', hash('sha256', '12345678'), '/images/profile_placeholder.png'],
+        ['Carol Bell', 'carol_demo', 'carol@example.test', hash('sha256', 'abcd1234'), '/images/profile_placeholder.png'],
+        ['Jimmy Carter', 'jim_demo', 'jim@example.test', hash('sha256', 'pokemon1'), '/images/profile_placeholder.png'],
+        ['Eva Green', 'eva_demo', 'eva@example.test', hash('sha256', 'mypassword'), '/images/profile_placeholder.png'],
+        ['Frank Wright', 'frank_demo', 'frank@example.test', hash('sha256', 'welcome1'), '/images/profile_placeholder.png'],
+        ['Grace Hopper', 'grace_demo', 'grace@example.test', hash('sha256', 'compiler1'), '/images/profile_placeholder.png'],
+        ['Hank Schrader', 'hank_demo', 'hank@example.test', hash('sha256', 'minerals'), '/images/profile_placeholder.png'],
+        ['Ivy Chen', 'ivy_demo', 'ivy@example.test', hash('sha256', 'design2026'), '/images/profile_placeholder.png'],
+        ['Jack Ryan', 'jack_demo', 'jack@example.test', hash('sha256', 'analyst99'), '/images/profile_placeholder.png'],
+        ['Guest', 'guest', 'guest@example.test', hash('sha256', 'password'), '/images/profile_placeholder.png']
     ];
     $stmt = $pdo->prepare('INSERT INTO users (display_name, username, email, pass, profile_pic) VALUES (?, ?, ?, ?, ?)');
     foreach ($users as $u) {
@@ -80,29 +77,29 @@ function seed_db(PDO $pdo): void
     }
 
     $posts = [
-        [1, '/images/uploads/low-quality-sebastien-lavalaye-TivcHM0QYNg-unsplash.jpg', 'Excited to share this!', 'Portland, Oregon, USA', '02-03-2024', 1],
-        [1, '/images/uploads/jakub-velicka-DrH2WT-oa7I-unsplash.jpg', 'Another update from me.', '', '02-03-2024', 1],
-        [1, '/images/uploads/low-quality-mihai-FvMe55sjXOI-unsplash.jpg', 'Draft: not ready yet.', 'Portland, Oregon, USA', '', 0],
-        [1, '/images/uploads/low-quality-federico-giampieri-VN89CJ5bf6c-unsplash.jpg', 'Morning views near the lake.', 'Bend, Oregon, USA', '04-12-2025', 1],
-        [2, '/images/uploads/low-quality-ahmed-hossam-B1x3KYNgae0-unsplash.jpg', 'Bob here, just posted.', 'Austin, Texas, USA', '10-06-2024', 1],
-        [2, '/images/uploads/low-quality-karsten-winegeart-tXT4nd_crWk-unsplash.jpg', 'Bob draft, still editing.', 'Austin, Texas, USA', '', 0],
-        [2, '/images/uploads/low-quality-sebastien-lavalaye-KZVNZxIDrnM-unsplash.jpg', 'Foggy morning in the hills.', 'Austin, Texas, USA', '11-15-2025', 1],
-        [3, '/images/uploads/lei-hwang-Z9PLpbYriJo-unsplash.jpg', 'Carol says hi.', 'Chicago, Illinois, USA', '05-23-2026', 1],
-        [3, '/images/uploads/juho-luomala-hbof6F8T72E-unsplash.jpg', 'Carol private draft.', 'Chicago, Illinois, USA', '', 0],
-        [3, '/images/uploads/low-quality-denis-z2OZWfwYxbU-unsplash.jpg', 'City lights from the high rise.', 'Chicago, Illinois, USA', '01-08-2026', 1],
-        [4, '/images/uploads/low-quality-tanaphong-toochinda-fakXx42emDU-unsplash.jpg', 'What a cool picture I took!', 'San Francisco, California, USA', '01-17-2021', 1],
-        [4, '/images/uploads/fatih-berat-orer-QXUmmF0rHWc-unsplash.jpg;/images/uploads/low-quality-pavel-rysych-6p0nivYmTAE-unsplash.jpg;/images/uploads/richard-stachmann-JprJHXI9FaE-unsplash.jpg', 'These are some cool pics I took!', 'San Francisco, California, USA', '03-09-2022', 1],
-        [4, '/images/uploads/low-quality-anupam-raisim-kerketta-hxIO21-unYQ-unsplash.jpg', 'Golden Gate Bridge never disappoints.', 'San Francisco, California, USA', '06-20-2025', 1],
-        [5, '/images/uploads/low-quality-marcin-kempa-zrWyj0NBupA-unsplash.jpg', 'Greetings from New York!', 'New York City, New York, USA', '08-12-2026', 1],
-        [5, '/images/uploads/low-quality-robert-heiser-4bT8pczLFfw-unsplash.jpg', 'Times Square vibes at night.', 'New York City, New York, USA', '08-14-2026', 1],
-        [6, '/images/uploads/low-quality-jocke-wulcan-KLOW1bD616Y-unsplash.jpg', 'Exploring Seattle today.', 'Seattle, Washington, USA', '09-01-2026', 1],
-        [6, '/images/uploads/low-quality-herbert-goetsch-YEcnWZkI67o-unsplash.jpg', 'Space Needle looking majestic.', 'Seattle, Washington, USA', '09-02-2026', 1],
-        [7, '/images/uploads/low-quality-jardel-vieira-HPUgWtdgzZ4-unsplash.jpg', 'Quiet walk in the autumn forest.', 'Boston, Massachusetts, USA', '09-10-2026', 1],
-        [7, '/images/uploads/low-quality-juan-carlos-pavon-xkKFhBYA5VI-unsplash.jpg', 'National Park road trip shot!', 'Yosemite, California, USA', '09-18-2026', 1],
-        [8, '/images/uploads/low-quality-fast-ink-33my-dJZ3N4-unsplash.jpg', 'Sunny day down at the beach.', 'Miami, Florida, USA', '08-30-2026', 1],
-        [9, '/images/uploads/low-quality-thom-milkovic-_FFQs6O8u34-unsplash.jpg; /images/uploads/ivan-shimko-vGQvjhvYiEU-unsplash.jpg', 'Cat sleeping on my workspace setup.', 'Los Angeles, California, USA', '09-05-2026', 1],
-        [9, '/images/uploads/dmytro-bayer-EoCZ54UVhec-unsplash.jpg', 'Late night coding marathon.', 'Los Angeles, California, USA', '', 0],
-        [10, '/images/uploads/low-quality-fast-ink-d-0BdkpompM-unsplash.jpg; /images/uploads/alice-qu-EmoxrAwZxHc-unsplash.jpg', 'Travel journey continues in Colorado!', 'Denver, Colorado, USA', '09-22-2026', 1],
+        [1, '/images/uploads/beach.jpg', 'Sunny day down at the beach.', 'Myrtle Beach, South Carolina, USA', '02-03-2024', 1],
+        [1, '/images/uploads/cloudy-sunset.jpg', 'Beautiful sunset over the water.', 'Caribbean Sea', '02-03-2024', 1],
+        [1, '/images/placeholder.png', 'Chicago was bunz, not posting this.', 'Chicago, Illinois, USA', '', 0],
+        [1, '/images/uploads/cruise.jpg', 'Morning views from the cruise.', 'Caribbean Sea', '04-12-2025', 1],
+        [2, '/images/uploads/car.jpg', 'The vibes are immaculate tonight.', 'Athens, Georgia, USA', '10-06-2024', 1],
+        [2, '/images/placeholder.png', 'I am so incredibly in love with Carol Bell, and I\'m so scared of her finding out. Luckily she will never see this post.', 'Athens, Georgia, USA', '', 0],
+        [2, '/images/uploads/carnival.jpg', 'Foggy morning in the hills.', 'Athens, Georgia, USA', '11-15-2025', 1],
+        [3, '/images/uploads/night-clouds.jpg', 'The sky is so nice tonight', 'Athens, GA, USA', '05-23-2026', 1],
+        [3, '/images/placeholder.png', 'Introducing our new product! Our newest phone has amazing features such as 3D video projection, support for neural link users, and mostly importantly a new state of the art camera.', 'Athens, Georgia, USA', '', 0],
+        [3, '/images/uploads/cruise-skyline.jpg', 'Leaving the port.', 'Miami, Florida, USA', '01-08-2026', 1],
+        [4, '/images/uploads/dolly-truckstop.JPG', 'Just toured Dolly Parton\'s new truck stop!', 'Cornersville, Tennessee, USA', '01-17-2021', 1],
+        [4, '/images/uploads/guinea-pigs.jpg', 'So small!', 'Nashville Zoo', '03-09-2022', 1],
+        [4, '/images/uploads/whale.jpeg', 'So large!', 'Atlanta, Georgia, USA', '06-20-2025', 1],
+        [5, '/images/uploads/night-sky.JPG', 'a beautiful night for sure', 'Athens, Georgia, USA', '08-12-2026', 1],
+        [5, '/images/uploads/moon.JPG', 'another beautiful night.', 'Athens, Georgia, USA', '08-14-2026', 1],
+        [6, '/images/uploads/opry.jpg', 'Exploring Tennessee today.', 'Nashville, Tennessee, USA', '09-01-2026', 1],
+        [6, '/images/uploads/ramblr.jpg', 'spooky season', 'Athens, Georgia, USA', '10-30-2026', 1],
+        [7, '/images/uploads/sanford.jpg', 'I\'m ready for another awesome football season!', 'Athens, Georgia, USA', '09-10-2026', 1],
+        [7, '/images/uploads/sky.jpeg; /images/uploads/sunset-clouds.jpg', 'The sky is so gorgeous today...', 'Athens, Georgia, USA', '09-18-2026', 1],
+        [8, '/images/uploads/sunset-clouds.jpg', 'Sunny day down at the beach.', 'Athens, Georgia, USA', '08-30-2026', 1],
+        [9, '/images/uploads/turtle.jpg', 'Turtle pond!!!', 'Athens, Georgia, USA', '09-05-2026', 1],
+        [9, '/images/uploads/astronaut.PNG', 'Hey, i\'m back with another piece of art! Not sure if I want to show it yet though...', 'Athens, Georgia, USA', '', 0],
+        [10, '/images/placeholder.png', 'Travel journey continues in Colorado!', 'Denver, Colorado, USA', '09-22-2026', 1],
     ];
 
     $stmt = $pdo->prepare('INSERT INTO posts (id, author_id, img_url, msg, loc, post_date, is_posted) VALUES (?, ?, ?, ?, ?, ?, ?)');
@@ -162,31 +159,6 @@ function seed_db(PDO $pdo): void
     }
 }
 
-function authenticate(PDO $pdo, string $username, string $password): ?array
-{
-    $stmt = $pdo->prepare('SELECT id, username, pass FROM users WHERE username = ?');
-    $stmt->execute([$username]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (strlen($password) > 256) {
-        return null;
-    }
-
-    $hash = $user['pass'] ?? DUMMY_PASSWORD_HASH;
-    $passwordOk = password_verify($password, $hash);
-
-    if (!$user || !$passwordOk) {
-        return null;
-    }
-
-    if (password_needs_rehash($hash, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST])) {
-        $upgrade = $pdo->prepare('UPDATE users SET pass = ? WHERE id = ?');
-        $upgrade->execute([password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), $user['id']]);
-    }
-
-    return ['id' => (int) $user['id'], 'username' => $user['username']];
-}
-
 function current_user_id(): int
 {
     start_secure_session();
@@ -212,7 +184,7 @@ function get_owned_post(PDO $pdo, string $postId, int $userId, ?int $isPosted = 
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-const POST_DATE_SQL = "substr(post_date, 7, 4) || '-' || substr(post_date, 1, 2) || '-' || substr(post_date, 4, 2)";
+const post_date_sort = "substr(post_date, 7, 4) || '-' || substr(post_date, 1, 2) || '-' || substr(post_date, 4, 2)";
 
 function get_visible_posts(PDO $pdo, array $filters = []): array
 {
@@ -222,13 +194,13 @@ function get_visible_posts(PDO $pdo, array $filters = []): array
             WHERE posts.is_posted = 1
             GROUP BY posts.id';
 
-    $postDateSort = POST_DATE_SQL;
+    $post_date_sort = "substr(post_date, 7, 4) || '-' || substr(post_date, 1, 2) || '-' || substr(post_date, 4, 2)";
 
     $orderBy = match ($filters['sort'] ?? 'newest') {
-        'oldest' => $postDateSort . ' ASC',
+        'oldest' => $post_date_sort . ' ASC',
         'most-saved' => 'saves_count DESC',
         'least-saved' => 'saves_count ASC',
-        default => $postDateSort . ' DESC',
+        default => $post_date_sort . ' DESC',
     };
 
     $stmt = $pdo->prepare($sql . ' ORDER BY ' . $orderBy);
@@ -250,7 +222,7 @@ function get_post_authors(PDO $pdo): array
 
 function get_user_own_posts(PDO $pdo, int $userId): array
 {
-    $stmt = $pdo->prepare('SELECT * FROM posts WHERE author_id = ? AND is_posted = 1 ORDER BY ' . POST_DATE_SQL . ' DESC');
+    $stmt = $pdo->prepare('SELECT * FROM posts WHERE author_id = ? AND is_posted = 1 ORDER BY ' . post_date_sort . ' DESC');
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -262,7 +234,7 @@ function get_user_saved_posts(PDO $pdo, int $userId): array
          FROM posts
          JOIN saves ON saves.post_id = posts.id
          WHERE saves.user_id = ? AND posts.is_posted = 1
-         ORDER BY ' . str_replace('post_date', 'posts.post_date', POST_DATE_SQL) . ' DESC'
+         ORDER BY ' . str_replace('post_date', 'posts.post_date', post_date_sort) . ' DESC'
     );
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

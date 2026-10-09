@@ -11,9 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_login(true);
-require_csrf();
 $userId = current_user_id();
 
+// Two kinds of caller:
+//  - the trash-can button sends JSON (fetch)   -> we answer with JSON
+//  - the post/draft forms send form data       -> we redirect on success
 $jsonData = json_decode(file_get_contents('php://input'), true);
 $isJsonRequest = is_array($jsonData);
 $jsonData = $isJsonRequest ? $jsonData : [];

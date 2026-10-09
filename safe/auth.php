@@ -9,12 +9,11 @@ function start_secure_session(): void
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
-        'httponly' => true,   // JavaScript (and therefore XSS) cannot read the session cookie
-        'samesite' => 'Lax',  // not sent on cross-site POSTs
+        'httponly' => true,
+        'samesite' => 'Lax',
     ]);
     session_start();
 }
-
 
 function require_login(bool $asJson = false): void
 {
@@ -25,39 +24,5 @@ function require_login(bool $asJson = false): void
         }
         header('Location: /safe/login.php');
         exit;
-    }
-}
-
-function csrf_token(): string
-{
-    start_secure_session();
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}
-
-function csrf_field(): string
-{
-    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
-}
-
-function csrf_meta(): string
-{
-    return '<meta name="csrf-token" content="' . e(csrf_token()) . '">';
-}
-
-function csrf_valid(): bool
-{
-    start_secure_session();
-    $sent = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? '');
-    $real = $_SESSION['csrf_token'] ?? '';
-    return is_string($sent) && $real !== '' && hash_equals($real, $sent);
-}
-
-function require_csrf(): void
-{
-    if (!csrf_valid()) {
-        json_fail('Invalid or missing CSRF token. Reload the page and try again.', 403);
     }
 }

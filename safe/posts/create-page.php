@@ -8,7 +8,6 @@ require_login();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <?= csrf_meta() ?>
     <title>Create Post</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
@@ -19,15 +18,13 @@ require_login();
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                class="logout">Logout</button></form>
+        <a href="../logout.php" class="logout">Logout</a>
     </header>
 
     <main class="create-form">
         <h2>Create a post</h2>
 
         <form method="post" action="logic/process-post.php" enctype="multipart/form-data">
-            <?= csrf_field() ?>
             <label for="image-upload">Images</label>
             <input type="file" name="my_files[]" id="image-upload" accept="image/*" multiple required>
             <br>

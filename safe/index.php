@@ -8,19 +8,17 @@ start_secure_session();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <?= csrf_meta() ?>
-    <title>Secure Corp — Live Demo</title>
+    <title>Live Demo - Secure Site</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
 
     <header class="app-header">
-        <a class="logo" href="index.php">Live Demo</a>
+        <a class="logo" href="/">Live Demo</a>
         <nav class="app-header-nav">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <form method="post" action="logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                        class="login">Logout</button></form>
+                <a class="login" href="/safe/logout.php">Logout</a>
             <?php else: ?>
                 <a class="login" href="login.php">Login</a>
             <?php endif; ?>
@@ -32,9 +30,8 @@ start_secure_session();
         <p class="corp-paragraph">
             This is the same site as the vulnerable version, with each flaw fixed. Try the exact attacks that worked
             on the vulnerable site (the same SQL injection, the same script in a post, the same ID tampering) and
-            compare what happens. The <strong>Attacker tools</strong> button (bottom right) gives you the same editable
-            address bar and request sender as on the vulnerable site. The sections below explain what changed in the
-            code.
+            compare what happens. The <code>Attacker tools</code> button gives you access to the same editable URL bar
+            and request sender as on the vulnerable site. The sections below explain what changed in the code.
         </p>
 
         <button class="accordion">SQL Injection &rarr; Prepared Statements</button>
@@ -51,10 +48,10 @@ start_secure_session();
         <button class="accordion">IDOR &rarr; Ownership Checks + UUIDs</button>
         <div class="panel">
             <p><strong>Before:</strong> posts and drafts were looked up by a sequential number, and nothing checked
-                whether the record belonged to the logged-in user, so changing <code>?draft_id=4</code> to
-                <code>5</code> showed (and could edit or delete) someone else's content.
+                whether the record belonged to the logged-in user, so changing <code>?draft_id=3</code> to
+                <code>6</code> showed (and could edit or delete) someone else's content.
             </p>
-            <p><strong>After (the real fix):</strong> every read, edit, publish and delete of a draft includes
+            <p><strong>After:</strong> every read, edit, publish and delete of a draft includes
                 <code>AND author_id = ?</code> with the <em>session's</em> user ID, and a record that isn't yours
                 gets the same "not found" as one that doesn't exist.
             </p>
@@ -72,33 +69,6 @@ start_secure_session();
                 which turns <code>&lt;</code> into <code>&amp;lt;</code> so it shows up as text. The session cookie is
                 also marked <code>HttpOnly</code>, so scripts can't read it even if one slipped through.
             </p>
-        </div>
-
-        <button class="accordion">Password Storage &rarr; bcrypt</button>
-        <div class="panel">
-            <p><strong>Before:</strong> passwords were stored as a plain SHA-256 hash. SHA-256 is fast and unsalted, so
-                two users with the same password get the same hash, and an attacker who steals the database can test
-                billions of guesses per second.</p>
-            <p><strong>After:</strong> <code>password_hash()</code> creates a salted bcrypt hash: a random salt per
-                password and a deliberately slow cost factor. Login looks the user up by username only, then checks the
-                password in PHP with <code>password_verify()</code>, so the password never goes anywhere near SQL.</p>
-            <p>Also: wrong username and wrong password give the same message, a dummy hash is checked for unknown
-                usernames so timing doesn't reveal which accounts exist, and hashes are upgraded automatically if the
-                cost factor is ever raised. The vulnerable site still uses unsalted SHA-256 so you can compare.</p>
-        </div>
-
-        <button class="accordion">CSRF &rarr; Anti-CSRF Tokens</button>
-        <div class="panel">
-            <p><strong>Before:</strong> a request that changes data only needed your session cookie, which the browser
-                attaches automatically, so a malicious page could make your browser submit a form or call an endpoint
-                as you.</p>
-            <p><strong>After:</strong> every state-changing request must also carry a random, per-session token (a
-                hidden form field, or an <code>X-CSRF-Token</code> header for <code>fetch()</code>), checked with
-                <code>hash_equals()</code>. Another site can ride along on your cookie but can't read the token. The
-                session cookie is also <code>SameSite=Lax</code>, and logout is now a POST form instead of a link.
-            </p>
-            <p>Try it: in Attacker tools &rarr; <em>Send request</em>, untick &ldquo;Include my CSRF token&rdquo; and
-                send the request. You get a 403 before the server even looks at the post ID.</p>
         </div>
     </main>
 

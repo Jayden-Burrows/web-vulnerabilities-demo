@@ -7,7 +7,6 @@ require __DIR__ . '/logic/profile-logic.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <?= csrf_meta() ?>
     <title>Profile</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
@@ -18,8 +17,7 @@ require __DIR__ . '/logic/profile-logic.php';
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
-                class="logout">Logout</button></form>
+        <a href="../logout.php" class="logout">Logout</a>
     </header>
 
     <main class="drafts-page">
@@ -103,7 +101,6 @@ require __DIR__ . '/logic/profile-logic.php';
 
                         <form method="post" action="logic/process-post.php" enctype="multipart/form-data"
                             class="draft-edit-form">
-                            <?= csrf_field() ?>
                             <input type="hidden" name="draft_id" value="<?= e($viewedDraft['id']) ?>">
 
                             <?php $images = draft_images($viewedDraft['img_url']); ?>

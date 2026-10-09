@@ -10,28 +10,27 @@ $shownQuery = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = str_param($_POST, 'uname');
     $psw = str_param($_POST, 'psw');
+    $hashed_psw = hash('sha256', $psw);
 
-    $shownQuery = 'SELECT id, username, pass FROM users WHERE username = ?';
+    $query = 'SELECT id, username FROM users WHERE username = ? AND pass = ?';
+    $shownQuery = $query;
 
-    if (!csrf_valid()) {
-        $loginError = 'Your session expired. Please try again.';
-    } else {
-        try {
-            $user = authenticate($pdo, $uname, $psw);
+    try {
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$uname, $hashed_psw]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user) {
-                session_regenerate_id(true);   
-                unset($_SESSION['csrf_token']);  
-                $_SESSION['user_id'] = $user['id'];
-                header('Location: /safe/posts/index.php');
-                exit;
-            }
-
-            $loginError = 'Invalid username or password.';
-        } catch (PDOException $e) {
-            error_log('Login query failed: ' . $e->getMessage());
-            $loginError = 'Something went wrong. Please try again.';
+        if ($user) {
+            session_regenerate_id(true); // new session ID on login (prevents session fixation)
+            $_SESSION['user_id'] = (int) $user['id'];
+            header('Location: /safe/posts/index.php');
+            exit;
         }
+
+        $loginError = 'Invalid username or password.';
+    } catch (PDOException $e) {
+        error_log('Login query failed: ' . $e->getMessage());
+        $loginError = 'Something went wrong. Please try again.';
     }
 }
 
@@ -46,8 +45,8 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Login — Secure Corp</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Login</title>
+    <link rel="stylesheet" href="/safe/css/style.css">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
@@ -58,7 +57,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="login-side-content">
             <a href="index.php" class="login-side-link">Live Demo</a>
             <p class="login-side-text">This is the secure version of the login form. It uses a prepared
-                statement, bcrypt-hashed passwords, a CSRF token — try the same SQL injection you used on the vulnerable site and watch it fail.</p>
+                statement; try the same SQL injection you used on the vulnerable site and watch it fail.</p>
         </div>
 
         <div class="login-panel">
@@ -72,7 +71,6 @@ if (isset($_SESSION['user_id'])) {
                 <?php endif; ?>
 
                 <form method="post" action="login.php" class="login-form">
-                    <?= csrf_field() ?>
                     <label for="uname">Username</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user"></i>
@@ -94,7 +92,8 @@ if (isset($_SESSION['user_id'])) {
 
                 <?php if ($shownQuery && $loginError): ?>
                     <div class="sql-debug">
-                        <p class="sql-debug-label">Query the server ran (your input is bound separately, never pasted in). The password is then checked with password_verify():</p>
+                        <p class="sql-debug-label">Query the server ran (your input is bound separately, never pasted in):
+                        </p>
                         <pre class="sql-debug-query"><?= e($shownQuery) ?></pre>
                     </div>
                 <?php endif; ?>
