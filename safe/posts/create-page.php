@@ -8,6 +8,7 @@ require_login();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csrf_meta() ?>
     <title>Create Post</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
@@ -18,7 +19,8 @@ require_login();
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <a href="../logout.php" class="logout">Logout</a>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
+                class="logout">Logout</button></form>
     </header>
 
     <main class="create-form">
@@ -30,11 +32,11 @@ require_login();
             <br>
 
             <label for="msg">Message</label>
-            <textarea name="msg" id="msg" rows="4" placeholder="What's on your mind?"></textarea>
+            <textarea name="msg" id="msg" rows="4" placeholder="What's on your mind?" data-straight></textarea>
             <br>
 
             <label for="location">Location</label>
-            <input type="text" name="location" id="location" placeholder="City, Region, Location" autocomplete="off">
+            <input type="text" name="location" id="location" placeholder="City, Region, Location" autocomplete="off" data-straight>
             <br>
 
             <div class="post-buttons">
@@ -66,6 +68,7 @@ require_login();
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', () => {

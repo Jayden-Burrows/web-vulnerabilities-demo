@@ -2,35 +2,44 @@
 require __DIR__ . '/db.php';
 start_secure_session();
 
+// Prevents browsers from showing cached copies of CSRF tokens
+// that no longer work
+header('Cache-Control: no-store');
+
 $pdo = get_db();
 
 $loginError = '';
 $shownQuery = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // ensure the username and password provided are plain strings
     $uname = str_param($_POST, 'uname');
     $psw = str_param($_POST, 'psw');
-    $hashed_psw = hash('sha256', $psw);
 
-    $query = 'SELECT id, username FROM users WHERE username = ? AND pass = ?';
-    $shownQuery = $query;
+    $shownQuery = 'SELECT id, username, pass FROM users WHERE username = ?';
 
-    try {
-        $stmt = $pdo->prepare($query);
-        $stmt->execute([$uname, $hashed_psw]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!csrf_valid()) {
+        $loginError = 'Your session expired. Please try again.';
+    } else {
+        try {
+            // check the provided password with the user's using 
+            // password_verify which is implemented in PHP instead of directly
+            // comparing inside the SQL query.
+            $user = authenticate($pdo, $uname, $psw);
 
-        if ($user) {
-            session_regenerate_id(true); // new session ID on login (prevents session fixation)
-            $_SESSION['user_id'] = (int) $user['id'];
-            header('Location: /safe/posts/index.php');
-            exit;
+            if ($user) {
+                session_regenerate_id(true); // new session ID on login (prevents session fixation)
+                unset($_SESSION['csrf_token']); // add a fresh CSRF token for the new session
+                $_SESSION['user_id'] = $user['id'];
+                header('Location: /safe/posts/index.php');
+                exit;
+            }
+            // If login failed, provide an error message
+            $loginError = 'Invalid username or password.';
+        } catch (PDOException $e) {
+            error_log('Login query failed: ' . $e->getMessage());
+            $loginError = 'Something went wrong. Please try again.';
         }
-
-        $loginError = 'Invalid username or password.';
-    } catch (PDOException $e) {
-        error_log('Login query failed: ' . $e->getMessage());
-        $loginError = 'Something went wrong. Please try again.';
     }
 }
 
@@ -46,9 +55,7 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Login</title>
-    <link rel="stylesheet" href="/safe/css/style.css">
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
@@ -71,10 +78,12 @@ if (isset($_SESSION['user_id'])) {
                 <?php endif; ?>
 
                 <form method="post" action="login.php" class="login-form">
-                    <label for="uname">Username</label>
+                <?= csrf_field() ?>    
+                <label for="uname">Username</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
+                        <input type="text" placeholder="Enter Username" name="uname" id="uname" required data-straight
+                            autocorrect="off" autocapitalize="off" spellcheck="false">
                     </div>
 
                     <label for="psw">Password</label>
@@ -89,6 +98,12 @@ if (isset($_SESSION['user_id'])) {
 
                     <button type="submit">Sign in</button>
                 </form>
+
+                <div class="payload-chips" id="payload-chips" hidden>
+                    <p>Typing symbols on a phone is fiddly. Tap to fill in the username:</p>
+                    <button type="button" data-fill="' OR 1=1 --">' OR 1=1 --</button>
+                    <button type="button" data-fill="bob_demo' --">bob_demo' --</button>
+                </div>
 
                 <?php if ($shownQuery && $loginError): ?>
                     <div class="sql-debug">
@@ -110,8 +125,8 @@ if (isset($_SESSION['user_id'])) {
         function showPassword() {
             const showing = passInput.type === 'text';
             passInput.type = showing ? 'password' : 'text';
-            toggleIcon.classList.toggle('zmdi-eye', showing);
-            toggleIcon.classList.toggle('zmdi-eye-off', !showing);
+            toggleIcon.classList.toggle('fa-eye', showing);
+            toggleIcon.classList.toggle('fa-eye-slash', !showing);
         }
     </script>
 </body>

@@ -1,4 +1,7 @@
+// JS logic for saving a post using the thumbtack
+
 const saveBtn = document.getElementById('save-btn');
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 if (saveBtn) {
     saveBtn.addEventListener('click', () => {
@@ -7,13 +10,15 @@ if (saveBtn) {
     });
 }
 
+// Send the post to the backend to process in the database
 async function savePost(postId) {
     let action = saveBtn.classList.contains('saved') ? 'delete' : 'insert';
     try {
         const response = await fetch(`logic/process-save-post.php?action=${action}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
             },
             body: JSON.stringify({ post_id: postId })
         });

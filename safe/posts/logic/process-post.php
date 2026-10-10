@@ -11,11 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 require_login(true);
+require_csrf();
 $userId = current_user_id();
 
-// Two kinds of caller:
-//  - the trash-can button sends JSON (fetch)   -> we answer with JSON
-//  - the post/draft forms send form data       -> we redirect on success
 $jsonData = json_decode(file_get_contents('php://input'), true);
 $isJsonRequest = is_array($jsonData);
 $jsonData = $isJsonRequest ? $jsonData : [];
@@ -38,6 +36,7 @@ try {
     $redirect = '../profile.php?tab=posts';
 
     if ($action === 'delete') {
+        // Add an authorization check where you see if the user is the author of that post before deleting
         $stmt = $pdo->prepare('DELETE FROM posts WHERE id = ? AND author_id = ?');
         $stmt->execute([$postId, $userId]);
         if ($stmt->rowCount() === 0) {
@@ -46,6 +45,7 @@ try {
         $pdo->prepare('DELETE FROM saves WHERE post_id = ?')->execute([$postId]);
         $redirect = '../profile.php?tab=posts';
     } elseif ($action === 'update') {
+        // Add an authorization check where you see if the user is the author of that post before allowing them to edit it
         $draft = get_owned_post($pdo, $postId, $userId, 0);
         if (!$draft) {
             json_fail('Draft not found.', 404);
@@ -67,8 +67,8 @@ try {
         $redirect = '../profile.php?tab=drafts';
     } elseif ($action === 'post') {
         $postDate = date('m-d-Y');
-
         if ($postId !== '') {
+            // Add an authorization check where you see if the user is the author of that draft before posting
             $draft = get_owned_post($pdo, $postId, $userId, 0);
             if (!$draft) {
                 json_fail('Draft not found.', 404);
@@ -98,8 +98,10 @@ try {
     header('Location: ' . $redirect);
     exit;
 } catch (RuntimeException $e) {
+    // Handles Exceptions purposefully thrown and outputs messages that are safe to display
     json_fail($e->getMessage(), 400);
 } catch (Throwable $e) {
+    // Handles unexpected exceptions and shows nothing
     error_log('process-post failed: ' . $e->getMessage());
     json_fail('Something went wrong.', 500);
 }

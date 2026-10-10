@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/session.php';
 
 function get_db(): PDO
 {
@@ -153,9 +154,7 @@ function seed_db(PDO $pdo): void
 
 function current_user_id(): int
 {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+    start_vuln_session();
 
     return (int) $_SESSION['user_id'] ?? 0;
 }

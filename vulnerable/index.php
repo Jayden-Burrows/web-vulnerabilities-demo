@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/session.php';
+start_vuln_session();
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,7 +12,7 @@ session_start();
     <link rel="stylesheet" href="/style.css">
 </head>
 
-<body>
+<body class="theme-vuln">
 
     <header class="app-header">
         <a class="logo" href="/">Live Demo</a>
@@ -47,6 +48,9 @@ session_start();
                 For each topic below, the hints give progressively more information about how to find and approach the
                 vulnerabilities in the site.
             </p>
+            <p>On a phone? Your keyboard may swap <code>--</code> for a long dash or straighten quotes into curly
+                ones. The attack fields on this site convert them back automatically, and once you've opened the SQL
+                injection answer, the login page shows tap-to-fill buttons for the payloads.</p>
             <p>When you're done, check out <code>safe/</code> to compare how the secure site behaves.</p>
             <p>This website can't give you access to the browser URL bar or developer tools, so use the
                 <code>Attacker tools</code> button. This button gives you access to an URL bar that you can modify and
@@ -72,18 +76,28 @@ session_start();
                     ignore?
                 </p>
             </details>
-            <details class="hint">
+            <details class="hint" data-unlock="sqli-answer">
                 <summary>Hint 3: The answer</summary>
                 <p>Enter <code>' OR 1=1 --</code> as the username with any password. The query
-                    <code>SELECT * FROM users WHERE username = ' OR 1=1--' AND pass = '...'</code> always evalutes to
+                    <code>SELECT * FROM users WHERE username = ' OR 1=1--' AND pass = '...'</code> always evaluates to
                     <code>TRUE</code> , so
                     the database returns every user, and the app logs you in as the first one. To become a specific
                     user, you can comment out the password check instead: <code>bob_demo' --</code>
                 </p>
             </details>
             <details class="hint">
+                <summary>My payload didn't work</summary>
+                <p>A very common payload is <code>' OR '1'='1</code>, and on its own it is not enough here. The query
+                    becomes <code>... WHERE username = '' OR '1'='1' AND pass = '...'</code>. SQL evaluates
+                    <code>AND</code> before <code>OR</code>, so this really means "the username is empty, <em>or</em>
+                    (<code>1=1</code> <em>and</em> the password matches)". The password check is still alive. Ending
+                    your input with <code>--</code> comments it out, which is why the payload in Hint 3 works.
+                </p>
+            </details>
+            <details class="hint">
                 <summary>Why this was possible</summary>
                 <p>The website builds a SQL query by passing your input directly into it without validating it first. As
+                    a
                     consequence, the database can't distinguish user input from code that should be executed. To prevent
                     this, developers often use prepared statements which makes sure the database treats the user input
                     as strictly literal values. See the secure version for more details.</p>
@@ -111,7 +125,7 @@ session_start();
                 </p>
             </details>
             <details class="hint">
-                <summary>Hint3: The answer</summary>
+                <summary>Hint 3: The answer</summary>
                 <p>Log in as <code>alice_demo</code> and open <code>posts/profile.php?draft_id=6</code>. This should
                     open Bob's
                     private draft. Editing it and pressing Save changes Bob's post when you navigate back to it. The
@@ -162,6 +176,9 @@ session_start();
     </nav>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
+    <script src="/js/ui-motion.js"></script>
+    <script src="/js/payload-chips.js"></script>
     <script>
         let accordions = document.querySelectorAll(".accordion");
 

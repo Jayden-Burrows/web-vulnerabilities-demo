@@ -1,7 +1,9 @@
 <?php
-session_start();
+require_once __DIR__ . '/session.php';
+start_vuln_session();
 
 require __DIR__ . '/db.php';
+
 $pdo = get_db();
 
 $loginError = '';
@@ -55,8 +57,6 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Login</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
 
 <body>
@@ -82,13 +82,13 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
                     <label for="uname">Username</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
+                        <input type="text" placeholder="Enter Username" name="uname" id="uname" required data-straight>
                     </div>
 
                     <label for="psw">Password</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+                        <input type="password" placeholder="Enter Password" name="psw" id="psw" required data-straight>
                         <button type="button" class="toggle-password" onclick="showPassword()"
                             aria-label="Show password">
                             <i class="fa-solid fa-eye" id="toggle-password-icon"></i>
@@ -97,6 +97,12 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
 
                     <button type="submit">Sign in</button>
                 </form>
+
+                <div class="payload-chips" id="payload-chips" hidden>
+                    <p>Typing symbols on a phone is fiddly. Tap to fill in the username:</p>
+                    <button type="button" data-fill="' OR 1=1 --">' OR 1=1 --</button>
+                    <button type="button" data-fill="bob_demo' --">bob_demo' --</button>
+                </div>
 
                 <?php if ($shownQuery && ($sqlError || $loginError)): ?>
                     <div class="sql-debug">
@@ -132,6 +138,8 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
     <?php endif; ?>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
+    <script src="/js/payload-chips.js"></script>
     <script>
         const passInput = document.getElementById('psw');
         const toggleIcon = document.getElementById('toggle-password-icon');
@@ -139,14 +147,16 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
         function showPassword() {
             const showing = passInput.type === 'text';
             passInput.type = showing ? 'password' : 'text';
-            toggleIcon.classList.toggle('zmdi-eye', showing);
-            toggleIcon.classList.toggle('zmdi-eye-off', !showing);
+            toggleIcon.classList.toggle('fa-eye', showing);
+            toggleIcon.classList.toggle('fa-eye-slash', !showing);
         }
 
         function closeLoginAlert() {
             window.location.href = '/vulnerable/posts/index.php';
         }
     </script>
+    <?php include __DIR__ . '/../tools/attacker-tools.php'; ?>
+
 </body>
 
 </html>

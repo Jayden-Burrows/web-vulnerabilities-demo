@@ -25,10 +25,11 @@ if (isset($_GET['post_id'])) {
         $stmt->execute([$requestedPostId]);
         $viewedPost = $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
+// 
     if (!$viewedPost) {
         $postNotFound = true;
     } else {
+        // Get data about this post
         $stmt = $pdo->prepare('SELECT id, display_name, profile_pic FROM users WHERE id = ?');
         $stmt->execute([$viewedPost['author_id']]);
         $author = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,10 +38,12 @@ if (isset($_GET['post_id'])) {
         $displayName = $author['display_name'] ?? 'Unknown';
         $profilePic = $author['profile_pic'] ?? '/images/placeholder.png';
 
+        // Get number of saves for this post
         $stmt = $pdo->prepare('SELECT COUNT(*) as numSaves FROM saves WHERE post_id = ?');
         $stmt->execute([$viewedPost['id']]);
         $numSaves = (int) ($stmt->fetch(PDO::FETCH_ASSOC)['numSaves'] ?? 0);
 
+        // Get if the current user has saved this post
         $stmt = $pdo->prepare('SELECT COUNT(*) as isSaved FROM saves WHERE post_id = ? AND user_id = ?');
         $stmt->execute([$viewedPost['id'], $userId]);
         $isSaved = (int) ($stmt->fetch(PDO::FETCH_ASSOC)['isSaved'] ?? 0);

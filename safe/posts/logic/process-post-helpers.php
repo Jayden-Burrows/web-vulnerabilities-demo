@@ -1,4 +1,7 @@
 <?php
+
+// Function to take img files from the create/draft form, upload them to images/uploads,
+// and if multiple images store their files names as a single string
 function processImgs(): array
 {
     $imgUrls = [];
@@ -15,6 +18,7 @@ function processImgs(): array
     $allowedMime = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
     if (!empty($_FILES['my_files']['name'][0])) {
+        // Iterate through uploaded files
         foreach ($_FILES['my_files']['name'] as $key => $name) {
             $tmpName = $_FILES['my_files']['tmp_name'][$key];
             $fileSize = $_FILES['my_files']['size'][$key];
@@ -48,7 +52,8 @@ function processImgs(): array
 }
 
 function resolve_images(string $existingImgUrlField = ''): array
-{
+{   
+    // Store multiple img urls as a single string
     $existing = array_values(array_filter(array_map('trim', explode(';', $existingImgUrlField))));
     $requested = $_POST['keep_images'] ?? [];
     $requested = is_array($requested) ? $requested : [];

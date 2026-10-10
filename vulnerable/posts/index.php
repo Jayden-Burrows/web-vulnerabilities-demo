@@ -151,6 +151,7 @@ function posts_query(array $overrides = []): string
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>

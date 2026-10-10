@@ -21,6 +21,7 @@ function posts_query(array $overrides = []): string
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csrf_meta() ?>
     <title>Posts</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
@@ -31,7 +32,8 @@ function posts_query(array $overrides = []): string
 
     <header class="app-header">
         <a class="logo" href="/">Live Demo</a>
-        <a href="../logout.php" class="logout">Logout</a>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
+                class="logout">Logout</button></form>
     </header>
 
     <form method="get" class="posts-filter-bar">
@@ -153,6 +155,7 @@ function posts_query(array $overrides = []): string
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>

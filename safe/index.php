@@ -8,6 +8,7 @@ start_secure_session();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csrf_meta() ?>
     <title>Live Demo - Secure Site</title>
     <link rel="stylesheet" href="/style.css">
 </head>
@@ -18,7 +19,8 @@ start_secure_session();
         <a class="logo" href="/">Live Demo</a>
         <nav class="app-header-nav">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <a class="login" href="/safe/logout.php">Logout</a>
+                <form method="post" action="logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
+                        class="login">Logout</button></form>
             <?php else: ?>
                 <a class="login" href="login.php">Login</a>
             <?php endif; ?>
@@ -79,6 +81,7 @@ start_secure_session();
     </nav>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script>
         document.querySelectorAll(".accordion").forEach(accordion => {
             accordion.addEventListener("click", function () {

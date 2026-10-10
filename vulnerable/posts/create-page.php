@@ -30,11 +30,11 @@ require_login();
             <br>
 
             <label for="msg">Message</label>
-            <textarea name="msg" id="msg" rows="4" placeholder="What's on your mind?"></textarea>
+            <textarea name="msg" id="msg" rows="4" placeholder="What's on your mind?" data-straight></textarea>
             <br>
 
             <label for="location">Location</label>
-            <input type="text" name="location" id="location" placeholder="City, Region, Location" autocomplete="off">
+            <input type="text" name="location" id="location" placeholder="City, Region, Location" autocomplete="off" data-straight>
             <br>
 
             <div class="post-buttons">
@@ -66,6 +66,7 @@ require_login();
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', () => {

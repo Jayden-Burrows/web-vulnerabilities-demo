@@ -1,9 +1,13 @@
+// JS for deleting a post 
+
 const deleteBtn = document.getElementById('delete-btn');
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
 if (deleteBtn) {
     deleteBtn.addEventListener('click', () => deletePost(deleteBtn.dataset.postId));
 }
 
+// Sending the delete request to the backend to delete in the database
 async function deletePost(postId) {
     if (!confirm('Delete this post?')) {
         return;
@@ -11,7 +15,7 @@ async function deletePost(postId) {
     try {
         const response = await fetch('logic/process-post.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
             body: JSON.stringify({ post_id: postId, action: 'delete' })
         });
         const data = await response.json();

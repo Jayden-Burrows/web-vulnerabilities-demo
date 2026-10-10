@@ -7,6 +7,7 @@ require __DIR__ . '/logic/profile-logic.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <?= csrf_meta() ?>
     <title>Profile</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet"
@@ -17,7 +18,8 @@ require __DIR__ . '/logic/profile-logic.php';
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
-        <a href="../logout.php" class="logout">Logout</a>
+        <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
+                class="logout">Logout</button></form>
     </header>
 
     <main class="drafts-page">
@@ -101,6 +103,7 @@ require __DIR__ . '/logic/profile-logic.php';
 
                         <form method="post" action="logic/process-post.php" enctype="multipart/form-data"
                             class="draft-edit-form">
+                            <?= csrf_field() ?>
                             <input type="hidden" name="draft_id" value="<?= e($viewedDraft['id']) ?>">
 
                             <?php $images = draft_images($viewedDraft['img_url']); ?>
@@ -123,11 +126,11 @@ require __DIR__ . '/logic/profile-logic.php';
                             <input type="file" name="my_files[]" id="draft-image-upload" accept="image/*" multiple>
 
                             <label for="draft-msg">Description</label>
-                            <textarea name="msg" id="draft-msg" rows="4"><?= e($viewedDraft['msg']) ?></textarea>
+                            <textarea name="msg" id="draft-msg" rows="4" data-straight><?= e($viewedDraft['msg']) ?></textarea>
 
                             <label for="location">Location</label>
                             <input type="text" name="location" id="location" placeholder="City, Region, Location"
-                                autocomplete="off" value="<?= e($viewedCity) ?>">
+                                autocomplete="off" data-straight value="<?= e($viewedCity) ?>">
 
                             <div class="post-buttons">
                                 <button id="del-btn" name="action" value="delete" type="submit">Delete <i
@@ -231,6 +234,7 @@ require __DIR__ . '/logic/profile-logic.php';
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>

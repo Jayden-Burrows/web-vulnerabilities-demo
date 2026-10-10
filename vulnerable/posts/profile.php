@@ -127,11 +127,12 @@ require_login();
                             <input type="file" name="my_files[]" id="draft-image-upload" accept="image/*" multiple>
 
                             <label for="draft-msg">Description</label>
-                            <textarea name="msg" id="draft-msg" rows="4"><?= htmlspecialchars($viewedDraft['msg']) ?></textarea>
+                            <textarea name="msg" id="draft-msg" rows="4"
+                                data-straight><?= htmlspecialchars($viewedDraft['msg']) ?></textarea>
 
                             <label for="location">Location</label>
                             <input type="text" name="location" id="location" placeholder="City, Region, Location"
-                                autocomplete="off" value="<?= htmlspecialchars($viewedCity) ?>">
+                                autocomplete="off" data-straight value="<?= htmlspecialchars($viewedCity) ?>">
 
                             <div class="post-buttons">
                                 <button id="del-btn" name="action" value="delete" type="submit">Delete <i
@@ -234,6 +235,7 @@ require_login();
     </div>
 
     <script src="https://kit.fontawesome.com/1cb5b7a573.js" crossorigin="anonymous"></script>
+    <script src="/js/straight-input.js"></script>
     <script src="js/create-post-modal.js"></script>
     <script src="js/save-post-btn.js"></script>
     <script src="js/delete-post-btn.js"></script>

@@ -1,3 +1,5 @@
+// Button For Creating Post
+
 const createBtn = document.getElementById('create-btn');
 const createModal = document.getElementById('create-modal');
 

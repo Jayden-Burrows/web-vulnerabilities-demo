@@ -6,6 +6,15 @@ require_once __DIR__ . '/auth.php';
 
 use Ramsey\Uuid\Uuid;
 
+// Store passwords as salted bcrypt hashes. Using salted hashes helps to prevent 
+// rainbow table attacks
+const BCRYPT_COST = 12;
+
+// Use a hash for a random password, so when a username doesn't exist, this password can be compared 
+// in password_verify() to prevent attackers from being able to guess valid usernames 
+// based on the timing of the comparison.
+const DUMMY_PASSWORD_HASH = '$2a$12$VHadL9VUCfKOGNelbsNnhe4fQv/dJsIZS0q3n8wKaksEIHC38CMy.';
+
 function get_db(): PDO
 {
     $dataDir = __DIR__ . '/data';
@@ -58,18 +67,19 @@ function seed_db(PDO $pdo): void
         );
     ");
 
+    // Precompute bcrypt passwords for seed data because bcrypt is computationally expensive
     $users = [
-        ['Alice Croft', 'alice_demo', 'alice@example.test', hash('sha256', 'password'), '/images/profile_placeholder.png'],
-        ['Bob DeBuilder', 'bob_demo', 'bob@example.test', hash('sha256', '12345678'), '/images/profile_placeholder.png'],
-        ['Carol Bell', 'carol_demo', 'carol@example.test', hash('sha256', 'abcd1234'), '/images/profile_placeholder.png'],
-        ['Jimmy Carter', 'jim_demo', 'jim@example.test', hash('sha256', 'pokemon1'), '/images/profile_placeholder.png'],
-        ['Eva Green', 'eva_demo', 'eva@example.test', hash('sha256', 'mypassword'), '/images/profile_placeholder.png'],
-        ['Frank Wright', 'frank_demo', 'frank@example.test', hash('sha256', 'welcome1'), '/images/profile_placeholder.png'],
-        ['Grace Hopper', 'grace_demo', 'grace@example.test', hash('sha256', 'compiler1'), '/images/profile_placeholder.png'],
-        ['Hank Schrader', 'hank_demo', 'hank@example.test', hash('sha256', 'minerals'), '/images/profile_placeholder.png'],
-        ['Ivy Chen', 'ivy_demo', 'ivy@example.test', hash('sha256', 'design2026'), '/images/profile_placeholder.png'],
-        ['Jack Ryan', 'jack_demo', 'jack@example.test', hash('sha256', 'analyst99'), '/images/profile_placeholder.png'],
-        ['Guest', 'guest', 'guest@example.test', hash('sha256', 'password'), '/images/profile_placeholder.png']
+        ['Alice Croft', 'alice_demo', 'alice@example.test', '$2a$12$zi2Eppl96QkIhvjnIrzjWeimFyyXL.FrQzt8H46Yp3/E3Gjxgns5O', '/images/profile_placeholder.png'],
+        ['Bob DeBuilder', 'bob_demo', 'bob@example.test', '$2a$12$vkZrnA8D8cWNdvl3NxOErel1/U216Qsz/7ao6aNlvRXyc/1u3HaYi', '/images/profile_placeholder.png'],
+        ['Carol Bell', 'carol_demo', 'carol@example.test', '$2a$12$in4dWPogq73o/anlqlyL6eiFaXSnBej7JLp6K.u6SeGRd.Fv8pkai', '/images/profile_placeholder.png'],
+        ['Jimmy Carter', 'jim_demo', 'jim@example.test', '$2a$12$GkfxR9uuFbyHQeE/VnDxz.aUH5lOSj151yw7wAhGk8CSNZE.7Ua2S', '/images/profile_placeholder.png'],
+        ['Eva Green', 'eva_demo', 'eva@example.test', '$2a$12$2rchn5M4bAVxU01BvroU/.efp2fMhkF043VwP6TUU7abm0CJkw0Am', '/images/profile_placeholder.png'],
+        ['Frank Wright', 'frank_demo', 'frank@example.test', '$2a$12$Qu6lou0C9566SnyydSYg1.D9vOIPEthUkQak0RC.HJiXGQMrTFtXy', '/images/profile_placeholder.png'],
+        ['Grace Hopper', 'grace_demo', 'grace@example.test', '$2a$12$zP63rcoa7GJwqYOKClhqm.9McglyhUsOgq02Q36vsE6aGgqMr0yKy', '/images/profile_placeholder.png'],
+        ['Hank Schrader', 'hank_demo', 'hank@example.test', '$2a$12$gFap79q60VKGcL1G9UTNX.aRCdpdW5UvGQHhGfm0s9b0gsd2vON8i', '/images/profile_placeholder.png'],
+        ['Ivy Chen', 'ivy_demo', 'ivy@example.test', '$2a$12$e9CgQEP7yF8Ba0gnll2.0eQoY47RHVmLRCE2LbW6v9WdHG4RW6H9a', '/images/profile_placeholder.png'],
+        ['Jack Ryan', 'jack_demo', 'jack@example.test', '$2a$12$JAihH7ctOVlVjXTKaLLqUO7RJfgRDjRLCeNxkNPDT.2jaGMZkRUlC', '/images/profile_placeholder.png'],
+        ['Guest', 'guest', 'guest@example.test', '$2a$12$3qZ8zMSWv0S6FbnuaTtoI.Q00xwfvCdcaewk7UrjPjSm.UhkHa3lS', '/images/profile_placeholder.png']
     ];
     $stmt = $pdo->prepare('INSERT INTO users (display_name, username, email, pass, profile_pic) VALUES (?, ?, ?, ?, ?)');
     foreach ($users as $u) {
@@ -104,6 +114,7 @@ function seed_db(PDO $pdo): void
 
     $stmt = $pdo->prepare('INSERT INTO posts (id, author_id, img_url, msg, loc, post_date, is_posted) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $postUuids = [];
+    // insert each post individually, assigning a unique UUID
     foreach ($posts as $i => $p) {
         $postUuids[$i + 1] = Uuid::uuid4()->toString();
         $stmt->execute([$postUuids[$i + 1], ...$p]);
@@ -159,6 +170,34 @@ function seed_db(PDO $pdo): void
     }
 }
 
+// Checks the username and password by comparing the password in php instead of in the SQL database
+function authenticate(PDO $pdo, string $username, string $password): ?array
+{
+    $stmt = $pdo->prepare('SELECT id, username, pass FROM users WHERE username = ?');
+    $stmt->execute([$username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // bcrypt only reads the first 72 bytes, and nobody needs a 10 KB password:
+    // refuse absurd lengths instead of spending CPU on them.
+    if (strlen($password) > 256) {
+        return null;
+    }
+
+    $hash = $user['pass'] ?? DUMMY_PASSWORD_HASH;
+    $passwordOk = password_verify($password, $hash);
+
+    if (!$user || !$passwordOk) {
+        return null;
+    }
+
+    // If we ever raise BCRYPT_COST, upgrade each hash the next time its owner logs in.
+    if (password_needs_rehash($hash, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST])) {
+        $upgrade = $pdo->prepare('UPDATE users SET pass = ? WHERE id = ?');
+        $upgrade->execute([password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), $user['id']]);
+    }
+
+    return ['id' => (int) $user['id'], 'username' => $user['username']];
+}
 function current_user_id(): int
 {
     start_secure_session();
