@@ -13,7 +13,7 @@ start_secure_session();
     <link rel="stylesheet" href="/style.css">
 </head>
 
-<body>
+<body class="theme-safe">
 
     <header class="app-header">
         <a class="logo" href="/">Live Demo</a>
@@ -71,6 +71,19 @@ start_secure_session();
                 which turns <code>&lt;</code> into <code>&amp;lt;</code> so it shows up as text. The session cookie is
                 also marked <code>HttpOnly</code>, so scripts can't read it even if one slipped through.
             </p>
+        </div>
+
+        <button class="accordion">CSRF &rarr; Per-Session Tokens</button>
+        <div class="panel">
+            <p><strong>Before:</strong> logout and the save-post endpoint accepted any request carrying a valid
+                session cookie, including one triggered by another site the visitor never meant to interact with.</p>
+            <p><strong>After:</strong> every form includes a one-time-per-session token from <code>csrf_field()</code>,
+                every JavaScript request sends it in an <code>X-CSRF-Token</code> header, and
+                <code>csrf_valid()</code> checks it with <code>hash_equals()</code> before anything changes. Logout
+                is POST-only, so a plain link can no longer trigger it at all.</p>
+            <p>Try <a href="/tools/evil-coupons.html">the same forged-request page</a> against this site: the logout
+                link does nothing (GET is rejected), and the forged save request comes back with an "Invalid or
+                missing CSRF token" error, because the attacker's page has no way to read or guess your token.</p>
         </div>
     </main>
 

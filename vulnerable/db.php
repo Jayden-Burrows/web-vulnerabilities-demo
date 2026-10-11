@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/session.php';
 
+// See safe/db.php for why this exists.
+const DB_SCHEMA_VERSION = 1;
+
 function get_db(): PDO
 {
     $dataDir = __DIR__ . '/data';
@@ -14,8 +17,21 @@ function get_db(): PDO
     $pdo = new PDO('sqlite:' . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($isNew) {
+    // A file left over from an older version of this schema (for example one seeded before
+    // passwords moved to bcrypt) would otherwise sit there forever, since a file that already
+    // exists is never reseeded. PRAGMA user_version tags each fresh database with the schema it
+    // was seeded from, so a mismatch here reseeds instead of silently failing every login.
+    $version = $isNew ? null : (int) $pdo->query('PRAGMA user_version')->fetchColumn();
+
+    if ($isNew || $version !== DB_SCHEMA_VERSION) {
+        if (!$isNew) {
+            $pdo = null;
+            unlink($dbPath);
+            $pdo = new PDO('sqlite:' . $dbPath);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
         seed_db($pdo);
+        $pdo->exec('PRAGMA user_version = ' . DB_SCHEMA_VERSION);
     }
 
     return $pdo;

@@ -10,6 +10,11 @@ use Ramsey\Uuid\Uuid;
 // rainbow table attacks
 const BCRYPT_COST = 12;
 
+// Bump this whenever seed_db()'s table shape or seed data changes, so a database file left
+// over from an older version of this project gets rebuilt instead of causing confusing bugs
+// (an older file here used plain SHA-256 passwords, which made every login fail).
+const DB_SCHEMA_VERSION = 2;
+
 // Use a hash for a random password, so when a username doesn't exist, this password can be compared 
 // in password_verify() to prevent attackers from being able to guess valid usernames 
 // based on the timing of the comparison.
@@ -28,8 +33,21 @@ function get_db(): PDO
     $pdo = new PDO('sqlite:' . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($isNew) {
+    // A file left over from an older version of this schema (for example one seeded before
+    // passwords moved to bcrypt) would otherwise sit there forever, since a file that already
+    // exists is never reseeded. PRAGMA user_version tags each fresh database with the schema it
+    // was seeded from, so a mismatch here reseeds instead of silently failing every login.
+    $version = $isNew ? null : (int) $pdo->query('PRAGMA user_version')->fetchColumn();
+
+    if ($isNew || $version !== DB_SCHEMA_VERSION) {
+        if (!$isNew) {
+            $pdo = null;
+            unlink($dbPath);
+            $pdo = new PDO('sqlite:' . $dbPath);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
         seed_db($pdo);
+        $pdo->exec('PRAGMA user_version = ' . DB_SCHEMA_VERSION);
     }
 
     return $pdo;

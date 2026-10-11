@@ -58,7 +58,7 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="/style.css">
 </head>
 
-<body>
+<body class="theme-safe">
 
     <div class="login-page">
         <div class="login-side-content">
@@ -78,8 +78,8 @@ if (isset($_SESSION['user_id'])) {
                 <?php endif; ?>
 
                 <form method="post" action="login.php" class="login-form">
-                <?= csrf_field() ?>    
-                <label for="uname">Username</label>
+                    <?= csrf_field() ?>
+                    <label for="uname">Username</label>
                     <div class="input-icon-wrap">
                         <i class="fa-solid fa-user"></i>
                         <input type="text" placeholder="Enter Username" name="uname" id="uname" required data-straight

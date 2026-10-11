@@ -167,6 +167,38 @@ start_vuln_session();
                 </p>
             </details>
         </div>
+
+        <button class="accordion">CSRF (Cross-Site Request Forgery)</button>
+        <div class="panel">
+            <p>Your browser attaches this site's cookies to requests automatically, even when another site triggers
+                the request. If a page only checks for a valid cookie, it can't tell your real click from a request
+                some other website arranged on your behalf.</p>
+            <p><strong>Goal:</strong> see a website you've never interacted with change your account anyway.</p>
+            <details class="hint">
+                <summary>Hint 1: Log out without clicking Logout</summary>
+                <p>Sign in here, then open <a href="/tools/evil-coupons.html">this page</a> (pretend it's a site you
+                    found through an ad) in a new tab. Read what it claims to offer before you click anything.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 2: What ran before you clicked anything</summary>
+                <p>Look at the "What loaded the moment this page opened" box. Something was sent to this site the
+                    instant the tab opened &mdash; check your saved posts afterward.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 3: The answer</summary>
+                <p>The "Claim My Coupon" button is a plain link to <code>/vulnerable/logout.php</code>, a state change
+                    accepted on GET with no token, so clicking it logs you out. The page also fires a background
+                    request to the save-post endpoint on load, using the session cookie your browser already sends
+                    automatically. Neither request needed to read anything back from this site to do its damage.</p>
+            </details>
+            <details class="hint">
+                <summary>Why this was possible</summary>
+                <p>Nothing here checks for a secret the attacker's page couldn't also have supplied &mdash; only that
+                    some valid session cookie came along. Logout accepts GET instead of requiring a state-changing
+                    POST, and the save endpoint doesn't ask for anything beyond the cookie. See the secure version for
+                    how a per-session token closes both of those.</p>
+            </details>
+        </div>
     </main>
 
     <nav class="bottom-nav">

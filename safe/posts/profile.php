@@ -14,7 +14,7 @@ require __DIR__ . '/logic/profile-logic.php';
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
 
-<body>
+<body class="theme-safe">
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>

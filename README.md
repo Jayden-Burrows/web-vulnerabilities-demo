@@ -46,5 +46,15 @@ Phone keyboards can quietly break payloads: iOS Smart Punctuation turns `--` int
 
 A common payload, `' OR '1'='1`, does not log you in on its own: `AND` is evaluated before `OR`, so the password check still applies. The landing page has a hint explaining this ("My payload didn't work").
 
+## Tests
+
+The suite in `tests/` starts its own PHP server, resets `safe/data/` and `vulnerable/data/`, and checks that each exploit works on the vulnerable site and fails on the secure one (SQL injection, IDOR, stored XSS, CSRF, session isolation, and that a leftover database from an older schema gets rebuilt instead of breaking logins). It needs PHP with `pdo_sqlite` and Python 3 only:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs these tests on every push, plus `composer audit` and a Semgrep scan of `safe/`.
+
 ### AI Disclosure
-I initially came up with an overview of the website including the vulnerabilities to showcase, how to showcase them, and what the pages of each website should look like. From there, I leveraged AI to generate a base framework for me to further develop. While I expanded on this framework, I additionally used AI to assist me with styling, debugging code, and adding new features (such as hte Attacker Tools).
+I initially came up with an overview of the website including the vulnerabilities to showcase, how to showcase them, and what the pages of each website should look like. From there, I leveraged AI to generate a base framework for me to further develop. While I expanded on this framework, I additionally used AI to assist me with styling, debugging code, and adding new features (such as the Attacker Tools).

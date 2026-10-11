@@ -14,7 +14,7 @@ require_login();
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
 
-<body>
+<body class="theme-vuln">
 
     <header class="app-header">
         <a class="logo" href="/vulnerable/">Live Demo</a>

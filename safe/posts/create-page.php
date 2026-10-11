@@ -15,7 +15,7 @@ require_login();
         href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css">
 </head>
 
-<body>
+<body class="theme-safe">
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
@@ -27,6 +27,7 @@ require_login();
         <h2>Create a post</h2>
 
         <form method="post" action="logic/process-post.php" enctype="multipart/form-data">
+    <?= csrf_field() ?>
             <label for="image-upload">Images</label>
             <input type="file" name="my_files[]" id="image-upload" accept="image/*" multiple required>
             <br>

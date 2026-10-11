@@ -59,7 +59,7 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
     <link rel="stylesheet" href="/style.css">
 </head>
 
-<body>
+<body class="theme-vuln">
 
     <div class="login-page">
         <div class="login-side-content">
