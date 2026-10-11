@@ -2129,3 +2129,143 @@ body.theme-home .card.safe {
 .learn-table-wrap {
     overflow-x: auto;
 }
+
+.vuln-breadcrumb {
+    margin: 1.25rem 0 0;
+    font-size: var(--text-sm);
+}
+
+.vuln-breadcrumb a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+}
+
+.vuln-breadcrumb a:hover {
+    color: var(--color-link);
+}
+
+.vuln-hub-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin: 1.5rem 0 2.5rem;
+}
+
+.vuln-hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    color: var(--color-text);
+    text-decoration: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: 3px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.vuln-hub-card:hover {
+    border-top-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.vuln-hub-card h3 {
+    margin: 0;
+    font-size: var(--text-md);
+}
+
+.vuln-hub-card p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.cve-box {
+    margin: 1rem 0 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-danger);
+    border-radius: var(--radius-md);
+}
+
+.cve-box-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.cve-id {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+}
+
+.cve-badge {
+    padding: 0.1rem 0.6rem;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    color: #fff;
+    background: var(--color-danger);
+    border-radius: 999px;
+}
+
+.cve-badge.cvss-medium {
+    background: #d97706;
+}
+
+.cve-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.cve-box p {
+    margin: 0.5rem 0 0;
+}
+
+.code-compare {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin: 1rem 0 1.5rem;
+}
+
+.code-compare figure {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.code-compare figcaption {
+    padding: 0.45rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: #fff;
+}
+
+.code-compare .is-vuln figcaption {
+    background: #7f1d2b;
+}
+
+.code-compare .is-safe figcaption {
+    background: #1d6fd1;
+}
+
+.code-compare pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    background: var(--color-code-bg);
+}
+
+.code-compare code {
+    padding: 0;
+    background: none;
+    color: var(--color-code-text);
+    font-size: 0.82em;
+    white-space: pre;
+}

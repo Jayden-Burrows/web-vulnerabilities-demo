@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports: 
+      - "8080:80"
+    volumes: 
+      - vuln-data:/var/www/html/vulnerable/data
+      - safe-data:/var/www/html/safe/data
+
+volumes:
+  vuln-data:
+  safe-data:

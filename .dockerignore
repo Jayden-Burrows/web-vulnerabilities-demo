@@ -1,0 +1,10 @@
+.git
+.github
+tests
+vulnerable/data
+safe/data
+*.md
+.vscode
+Dockerfile
+docker-compose.yml
+.dockerignore

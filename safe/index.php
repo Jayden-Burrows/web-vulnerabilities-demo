@@ -80,7 +80,8 @@ start_secure_session();
             <p><strong>After:</strong> every form includes a one-time-per-session token from <code>csrf_field()</code>,
                 every JavaScript request sends it in an <code>X-CSRF-Token</code> header, and
                 <code>csrf_valid()</code> checks it with <code>hash_equals()</code> before anything changes. Logout
-                is POST-only, so a plain link can no longer trigger it at all.</p>
+                is POST-only, so a plain link can no longer trigger it at all.
+            </p>
             <p>Try <a href="/tools/evil-coupons.html">the same forged-request page</a> against this site: the logout
                 link does nothing (GET is rejected), and the forged save request comes back with an "Invalid or
                 missing CSRF token" error, because the attacker's page has no way to read or guess your token.</p>

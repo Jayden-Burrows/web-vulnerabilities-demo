@@ -40,14 +40,14 @@
                 <p>Four of the most common web security flaws, each demonstrated twice: broken, then fixed.</p>
             </div>
             <div class="topics">
-                <a class="topic-card" href="vulnerabilities.php#sql-injection">
+                <a class="topic-card" href="/vulnerabilities/sql-injection.php">
                     <span class="topic-num">01</span>
                     <h3>SQL injection</h3>
                     <p>Input is treated as part of the database query, so it can change what the query does.</p>
                     <span class="topic-meta">OWASP A05:2025 &middot; CWE-89</span>
                     <span class="topic-link">How it works &rarr;</span>
                 </a>
-                <a class="topic-card" href="vulnerabilities.php#xss">
+                <a class="topic-card" href="/vulnerabilities/xss.php">
                     <span class="topic-num">02</span>
                     <h3>Cross-site scripting</h3>
                     <p>Untrusted text is shown as live HTML, so an attacker's script runs in other people's browsers.
@@ -55,14 +55,14 @@
                     <span class="topic-meta">OWASP A05:2025 &middot; CWE-79</span>
                     <span class="topic-link">How it works &rarr;</span>
                 </a>
-                <a class="topic-card" href="vulnerabilities.php#idor">
+                <a class="topic-card" href="/vulnerabilities/idor.php">
                     <span class="topic-num">03</span>
                     <h3>IDOR</h3>
                     <p>The app trusts an ID in the request and never checks who owns the thing it points to.</p>
                     <span class="topic-meta">OWASP A01:2025 &middot; CWE-639</span>
                     <span class="topic-link">How it works &rarr;</span>
                 </a>
-                <a class="topic-card" href="vulnerabilities.php#csrf">
+                <a class="topic-card" href="/vulnerabilities/csrf.php">
                     <span class="topic-num">04</span>
                     <h3>CSRF</h3>
                     <p>Another site tricks a logged-in browser into sending a request the user never intended.</p>

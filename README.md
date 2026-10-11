@@ -12,15 +12,32 @@ All data is fake. Each SQLite database is created and seeded on first request.
 ## Running it online
 Try checking out the website [here](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Jayden-Burrows/web-vulnerabilities-demo/refs/heads/main/playground/blueprint.json). The site runs through WordPress Playground which can be memory intensive, so opening the website on a laptop or desktop is ideal.
 
+## Running it with Docker
+
+Build and run the included `Dockerfile`:
+
+```bash
+docker build -t web-vulnerabilities-demo .
+docker run -p 8080:80 web-vulnerabilities-demo
+```
+
+Or use Docker Compose to safely persist data files: 
+
+```bash
+docker compose up --build
+```
+
+Then, open <http://localhost:8080/>. `.github/workflows/ci.yml` builds and tests this image on every push.
+
 ## Running it locally
 
 Requires PHP 8.1+ with `pdo_sqlite`. Clone this repo, and from this folder, run:
 
 ```bash
-php -S localhost:8000
+php -S localhost:8080
 ```
 
-Open <http://localhost:8000/>. Demo logins (both sites): `guest` / `password`, `alice_demo` / `password`, `bob_demo` / `12345678`. You can reset the data by stopping the server and deleting `vulnerable/data/` and `safe/data/`.
+Open <http://localhost:8080/>. Demo logins (both sites): `guest` / `password` and `alice_demo` / `password` You can reset the data by stopping the server and deleting `vulnerable/data/` and `safe/data/`.
 
 Dependencies (`ramsey/uuid`) are committed in `vendor/`. If you change `composer.json`, run `composer install` and commit `vendor/` again.
 
@@ -43,8 +60,6 @@ Phone keyboards can quietly break payloads: iOS Smart Punctuation turns `--` int
 
 - `js/straight-input.js` runs on the attack-surface fields of both sites (login username, post text and location, the attacker-tools boxes). It turns off autocorrect and converts curly quotes, long dashes and ellipses back to ASCII as you type. It is a keyboard-compatibility aid for the demo, not a security control, and it runs on the `safe/` site too so both sites receive the same input.
 - `js/payload-chips.js` shows tap-to-fill payload buttons on the login pages once the visitor has opened "Hint 3: The answer" on the SQL injection panel. Until then they stay hidden so they don't give the answer away.
-
-A common payload, `' OR '1'='1`, does not log you in on its own: `AND` is evaluated before `OR`, so the password check still applies. The landing page has a hint explaining this ("My payload didn't work").
 
 ## Tests
 
