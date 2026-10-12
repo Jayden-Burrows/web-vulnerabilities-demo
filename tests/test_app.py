@@ -305,7 +305,7 @@ class Pages(unittest.TestCase):
     def test_public_pages_and_assets_load(self):
         c = Client()
         for path in ('/', '/vulnerable/index.php', '/safe/index.php', '/vulnerable/login.php', '/safe/login.php',
-                     '/vulnerabilities.php', '/tools/evil-coupons.html', '/fonts/inter-latin-wght-normal.woff2',
+                     '/vulnerabilities/csrf.php', '/vulnerabilities/idor.php', '/vulnerabilities/index.php', '/vulnerabilities/sql-injection.php', '/vulnerabilities/xss.php', '/tools/evil-coupons.html', '/fonts/inter-latin-wght-normal.woff2',
                      '/style.css', '/js/straight-input.js', '/js/payload-chips.js', '/js/ui-motion.js'):
             self.assertEqual(c.get(path)[0], 200, path)
 
