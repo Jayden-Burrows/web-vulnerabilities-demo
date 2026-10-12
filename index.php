@@ -13,7 +13,7 @@
     <header class="home-bar">
         <a class="brand" href="/">Live Demo</a>
         <nav>
-            <a href="vulnerabilities.php">Vulnerabilities</a>
+            <a href="vulnerabilities/index.php">Vulnerabilities</a>
             <a href="vulnerable/index.php">Vulnerable site</a>
             <a href="safe/index.php">Secure site</a>
         </nav>
