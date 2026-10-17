@@ -47,17 +47,18 @@
                 does entirely.</p>
 
             <h2>Risk</h2>
-            <p>Any place that lets user input reach a SQL query is a potential target, which is part of why this
-                class of bug is so common. A successful attack can expose or modify anything the database account can
+            <p>Any place that lets user input reach a SQL query can be a potential target, so vulnerabilities related to
+                this attack can be common. A successful attack can expose or modify anything the database account can
                 reach: user credentials, private records, configuration data, or in some cases the rest of the
                 database server. Because the technique is well documented and the tools to find it are widely
-                available, SQL injection remains cheap for attackers to find and expensive for victims when it
+                available, SQL injection remains easy for attackers to find and costly for victims when it
                 succeeds.</p>
 
             <h2>Prevention</h2>
             <p>Input validation using an allow list of safe characters or a deny list of potentially dangerous ones
-                can help, but it tends to need constant upkeep to close every loophole attackers find. The reliable
-                fix is a parameterized query (a prepared statement): the query's structure is sent to the database
+                can help harden applications, but it can require constant upkeep to close every loophole attackers find.
+                Parameterized queries (often implemented using prepared statement) are a more common and reliable method
+                of securing input fields. When using parameterized queries, each query's structure is sent to the database
                 separately from the user's values, so the database engine always treats user input as a literal
                 value.</p>
 
@@ -76,8 +77,9 @@ $stmt->execute([$username]);</code></pre>
             <p>The vulnerable version compares the inputted username and hashed password within the query string, so
                 a username like <code>' OR 1=1 --</code> changes the query's logic. The secure version sends
                 <code>?</code> as a placeholder and supplies <code>$username</code> as a bound parameter, so the
-                database always treats it as a literal value to compare and never as SQL to execute. Note that the secure version
-                also compares the password in PHP using password_verify(). 
+                database always treats it as a literal value to compare and never as SQL to execute. Note that the
+                secure version
+                also compares the password in PHP using password_verify().
             </p>
 
             <div class="try-links">

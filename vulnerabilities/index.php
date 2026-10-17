@@ -35,17 +35,37 @@
             <a class="vuln-hub-card" href="xss.php">
                 <h3>Cross-Site Scripting</h3>
                 <p>OWASP A05:2025 &middot; CWE-79</p>
-                <p>CVE-2025-40892 -; stored XSS in industrial monitoring software, CVSS 8.9.</p>
+                <p>CVE-2025-40892 -; stored XSS in industrial monitoring software, CVSS 7.1.</p>
             </a>
             <a class="vuln-hub-card" href="idor.php">
                 <h3>Insecure Direct Object Reference</h3>
                 <p>OWASP A01:2025 &middot; CWE-639</p>
-                <p>CVE-2025-43803 -; IDOR in a Liferay Portal widget, CVSS 5.3.</p>
+                <p>CVE-2025-43803 -; IDOR in a Liferay Portal widget, CVSS 6.9.</p>
             </a>
             <a class="vuln-hub-card" href="csrf.php">
                 <h3>Cross-Site Request Forgery</h3>
                 <p>OWASP A01:2025 &middot; CWE-352</p>
                 <p>CVE-2025-22552 -; CSRF in a WordPress plugin, CVSS 7.1.</p>
+            </a>
+            <a class="vuln-hub-card" href="file-upload.php">
+                <h3>Unrestricted File Upload</h3>
+                <p>OWASP A08:2025 &middot; CWE-434</p>
+                <p>CVE-2025-43946 -; unrestricted upload leading to RCE, CVSS 9.8.</p>
+            </a>
+            <a class="vuln-hub-card" href="ssrf.php">
+                <h3>Server-Side Request Forgery</h3>
+                <p>OWASP A01:2025 &middot; CWE-918</p>
+                <p>CVE-2023-25162 -; Nextcloud SSRF reaching cloud metadata, CVSS 5.3.</p>
+            </a>
+            <a class="vuln-hub-card" href="xxe.php">
+                <h3>XML External Entity (XXE)</h3>
+                <p>OWASP A05:2025 &middot; CWE-611</p>
+                <p>CVE-2025-66370 -; file exfiltration via an XML import, CVSS 5.0.</p>
+            </a>
+            <a class="vuln-hub-card" href="broken-access-control.php">
+                <h3>Broken Function-Level Authorization</h3>
+                <p>OWASP A01:2025 &middot; CWE-862</p>
+                <p>CVE-2025-4064 -; an admin page reachable with no session check.</p>
             </a>
         </div>
 

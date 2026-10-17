@@ -13,7 +13,7 @@
     <header class="home-bar">
         <a class="brand" href="/">Live Demo</a>
         <nav>
-            <a href="vulnerabilities/index.php">Vulnerabilities</a>
+            <a href="/vulnerabilities/">Vulnerabilities</a>
             <a href="vulnerable/index.php">Vulnerable site</a>
             <a href="safe/index.php">Secure site</a>
         </nav>
@@ -37,7 +37,7 @@
         <section>
             <div class="section-head">
                 <h2>What you'll explore</h2>
-                <p>Four of the most common web security flaws, each demonstrated twice: broken, then fixed.</p>
+                <p>Eight of the most common web security flaws, each demonstrated twice: broken, then fixed.</p>
             </div>
             <div class="topics">
                 <a class="topic-card" href="/vulnerabilities/sql-injection.php">
@@ -67,6 +67,36 @@
                     <h3>CSRF</h3>
                     <p>Another site tricks a logged-in browser into sending a request the user never intended.</p>
                     <span class="topic-meta">OWASP A01:2025 &middot; CWE-352</span>
+                    <span class="topic-link">How it works &rarr;</span>
+                </a>
+                <a class="topic-card" href="/vulnerabilities/file-upload.php">
+                    <span class="topic-num">05</span>
+                    <h3>File upload</h3>
+                    <p>Nothing checks what an uploaded file actually is before the server serves or runs it.</p>
+                    <span class="topic-meta">OWASP A08:2025 &middot; CWE-434</span>
+                    <span class="topic-link">How it works &rarr;</span>
+                </a>
+                <a class="topic-card" href="/vulnerabilities/ssrf.php">
+                    <span class="topic-num">06</span>
+                    <h3>SSRF</h3>
+                    <p>The server fetches a URL the visitor chose, reaching places the visitor couldn't reach directly.
+                    </p>
+                    <span class="topic-meta">OWASP A01:2025 &middot; CWE-918</span>
+                    <span class="topic-link">How it works &rarr;</span>
+                </a>
+                <a class="topic-card" href="/vulnerabilities/xxe.php">
+                    <span class="topic-num">07</span>
+                    <h3>XXE</h3>
+                    <p>An imported XML file's own entity declaration gets resolved, reading a local file into the
+                        import.</p>
+                    <span class="topic-meta">OWASP A05:2025 &middot; CWE-611</span>
+                    <span class="topic-link">How it works &rarr;</span>
+                </a>
+                <a class="topic-card" href="/vulnerabilities/broken-access-control.php">
+                    <span class="topic-num">08</span>
+                    <h3>Broken Function-Level Authorization</h3>
+                    <p>An admin page is reachable by anyone who knows the URL, with no server-side check at all.</p>
+                    <span class="topic-meta">OWASP A01:2025 &middot; CWE-862</span>
                     <span class="topic-link">How it works &rarr;</span>
                 </a>
             </div>

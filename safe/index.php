@@ -86,6 +86,62 @@ start_secure_session();
                 link does nothing (GET is rejected), and the forged save request comes back with an "Invalid or
                 missing CSRF token" error, because the attacker's page has no way to read or guess your token.</p>
         </div>
+
+        <button class="accordion">Unrestricted File Upload &rarr; Verified Content, Server-Generated Names</button>
+        <div class="panel">
+            <p><strong>Before:</strong> the avatar uploader checked the browser-supplied <code>Content-Type</code>
+                &mdash; a label the uploader controls &mdash; and kept the uploader's own filename, extension
+                included.</p>
+            <p><strong>After:</strong> <a href="account.php">the account page</a> calls PHP's
+                <code>getimagesize()</code>, which reads the file's actual header bytes and fails for anything that
+                isn't a real image, then generates a random filename with an extension taken from the type it just
+                verified. Nothing from the upload itself ends up in the stored file's name.
+            </p>
+            <p>Try the same spoofed upload here: declare <code>image/jpeg</code> for a file actually containing HTML
+                or PHP, named <code>avatar.php</code>. It's rejected with "That file isn't a recognized image," and
+                nothing is written to disk.</p>
+        </div>
+
+        <button class="accordion">SSRF &rarr; Scheme and IP-Range Checks</button>
+        <div class="panel">
+            <p><strong>Before:</strong> importing an avatar from a URL called <code>file_get_contents()</code>
+                directly on whatever the visitor typed, including <code>file://</code> paths and internal
+                addresses.</p>
+            <p><strong>After:</strong> <a href="account.php">the account page</a>'s <code>is_fetchable_url()</code>
+                allows only <code>http</code>/<code>https</code>, resolves the hostname, and rejects private,
+                loopback, and link-local IP ranges with PHP's built-in <code>FILTER_FLAG_NO_PRIV_RANGE</code> /
+                <code>FILTER_FLAG_NO_RES_RANGE</code> filters &mdash; then still checks the response is actually an
+                image before saving it.
+            </p>
+            <p>Try <code>file:///path/to/safe/internal-notice.txt</code> or <code>http://127.0.0.1/style.css</code>
+                here: both come back "That URL is not allowed" before any request is made.</p>
+        </div>
+
+        <button class="accordion">XXE &rarr; No Entity Substitution, DOCTYPE Rejected</button>
+        <div class="panel">
+            <p><strong>Before:</strong> importing posts from XML parsed the file with <code>LIBXML_NOENT</code>,
+                which substitutes entities declared in the file's own <code>DOCTYPE</code> &mdash; including ones
+                that point at a local file.</p>
+            <p><strong>After:</strong> <a href="account.php">the account page</a> rejects any uploaded XML containing
+                a <code>&lt;!DOCTYPE&gt;</code> declaration outright, and never passes <code>LIBXML_NOENT</code> even
+                for files that get past that check.</p>
+            <p>Try importing the same crafted XML with a <code>SYSTEM</code> entity here: it's rejected as "not
+                allowed (DOCTYPE declarations are rejected)" before parsing even starts. A plain XML file with no
+                DOCTYPE imports normally.</p>
+        </div>
+
+        <button class="accordion">Broken Access Control &rarr; Server-Side Role Check</button>
+        <div class="panel">
+            <p><strong>Before:</strong> the admin page only checked that someone was logged in, trusting that a
+                hidden nav link was protection enough.</p>
+            <p><strong>After:</strong> <a href="admin.php">admin.php</a> calls <code>require_admin()</code>
+                (<code>safe/auth.php</code>), which checks the signed-in user's own <code>is_admin</code> flag and
+                returns a 403 for anyone else &mdash; regardless of whether they were ever shown a link.</p>
+            <p>Sign in as <code>guest</code> / <code>password</code> and try going straight to
+                <a href="admin.php">admin.php</a>: 403. Only <code>admin_demo</code> / <code>password</code> can get
+                in.
+            </p>
+        </div>
     </main>
 
     <nav class="bottom-nav">

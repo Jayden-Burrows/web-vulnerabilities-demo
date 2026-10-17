@@ -29,35 +29,37 @@
             <div class="cve-box">
                 <div class="cve-box-head">
                     <span class="cve-id">CVE-2025-40892</span>
-                    <span class="cve-badge">CVSS v3.1: 8.9 - High</span>
+                    <span class="cve-badge">CVSS v4.0: 7.1 - High</span>
                     <span class="cve-meta">Disclosed December 18, 2025</span>
                 </div>
-                <p>Security researchers at Nozomi Networks disclosed a stored XSS flaw in the reporting feature of
-                    Guardian and CMC, industrial network monitoring platforms. A user with report-building
-                    permissions could define a report containing a JavaScript payload, or trick a victim into
-                    importing a malicious report template. When another user opened or imported that report, the
-                    script ran in their browser session, letting the attacker act as that user: modifying data,
-                    disrupting the application, or reading information the victim could see.</p>
+                <p>The product security team of Nozomi networks discovered a vulnerability with the Reports
+                    functionality of one of their products. This vulnerability allowed authenticated users with report
+                    privileges to define reports containing malicious JavaScript code. Furthermore, even without report
+                    privileges, attackers could exploit this vulnerability by manipulating users who did have report
+                    privileges to import a malicious report template. Then, when a victim would view or import the
+                    report, the malicious code would execute in their browser. Because the code executed from the user's
+                    browser, the application would view the attacker's code as legitimate traffic from the victim.
+                    Consequently, the application would allow the attacker to perform actions as the victim, such as
+                    viewing sensitive infromatio or modifying application data. </p>
             </div>
 
             <h2>Description</h2>
-            <p>XSS happens when an application prints untrusted text into a page as HTML instead of as plain text.
+            <p>Cross-Site Scripting (XSS) occurs when an application prints untrusted text into a page as HTML instead
+                of as plain text.
                 If that text contains a script tag or an event handler, the browser runs it exactly as if the site
-                itself had written it. In <em>stored</em> XSS, the payload is saved by the server, so it runs again
-                for every visitor who views it.</p>
+                itself had written it. In <em>stored</em> XSS, the payload is saved by the server, so it runs again for
+                every visitor who views it.</p>
 
             <h2>Risk</h2>
-            <p>A script running in another user's browser, under the real site's origin, can read anything that page
-                can read, submit forms as that user, or simply deface the page. Stored XSS is especially damaging
-                because it requires no ongoing action from the attacker once the payload is saved; it simply waits
-                for the next visitor.</p>
+            <p>A script running in another user's browser, under the real site's origin, can read anything that page can
+                read, submit forms as that user, or deface the page. Stored XSS can be especially damaging because it
+                does not require any ongoing action from the attacker once the payload is saved in the application database. Instead, the attacker can simply wait for a victim to stumble upon a valid page serving their malicious content.</p>
 
             <h2>Prevention</h2>
             <p>Escape output for the context it's rendered in. For HTML, that means converting characters like
                 <code>&lt;</code>, <code>&gt;</code> and <code>&quot;</code> into their HTML entities before they're
                 printed, so the browser displays them as text rather than parsing them as markup. A
-                Content-Security-Policy header is useful as a second layer of defense, but escaping output is the
-                fix that actually closes the hole.
+                Content-Security-Policy header can also be useful as a second layer of defense.
             </p>
 
             <h2>In this project</h2>

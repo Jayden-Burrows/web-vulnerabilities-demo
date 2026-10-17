@@ -199,6 +199,133 @@ start_vuln_session();
                     how a per-session token closes both of those.</p>
             </details>
         </div>
+
+        <button class="accordion">Unrestricted File Upload</button>
+        <div class="panel">
+            <p>The account page's avatar uploader checks a file's declared type, not its actual content, and keeps
+                the name you gave it.</p>
+            <p><strong>Goal:</strong> get a file you control hosted at a URL on this site's own domain.</p>
+            <details class="hint">
+                <summary>Hint 1: Start the upload</summary>
+                <p>Sign in, then open <a href="account.php">Account</a>. The avatar uploader only looks at the
+                    <code>Content-Type</code> your browser sends for the file &mdash; that's just a label you can set
+                    to anything.
+                </p>
+            </details>
+            <details class="hint">
+                <summary>Hint 2: Pick a name and a type</summary>
+                <p>Most file-picker dialogs won't let you type a fake type, but tools like curl, Postman, or your
+                    browser's dev tools can send a multipart request with any filename and any declared
+                    <code>Content-Type</code> you want, regardless of what's actually inside the file.
+                </p>
+            </details>
+            <details class="hint">
+                <summary>Hint 3: The answer</summary>
+                <p>Send a request where the file's declared type is <code>image/jpeg</code> (or png/gif/webp) but the
+                    filename is something like <code>avatar.php</code> and the content is plain text or HTML. It's
+                    accepted and stored under that exact name. Visit the URL the page gives back.</p>
+            </details>
+            <details class="hint">
+                <summary>Why this was possible</summary>
+                <p>Both the type check and the filename came entirely from the upload request &mdash; nothing the
+                    uploader doesn't already control. See <a href="/vulnerabilities/file-upload.php">the write-up</a>
+                    for what a page hosted this way can do, and for how far a file like this could go.</p>
+            </details>
+        </div>
+
+        <button class="accordion">SSRF (Server-Side Request Forgery)</button>
+        <div class="panel">
+            <p>The account page can also set your avatar by fetching a URL you give it &mdash; from the server, not
+                your browser.</p>
+            <p><strong>Goal:</strong> get the server to read something it wouldn't hand to you directly.</p>
+            <details class="hint">
+                <summary>Hint 1: Who's actually making the request?</summary>
+                <p>On <a href="account.php">Account</a>, use "Import from a URL" instead of the file upload. The
+                    fetch happens server-side, using whatever that server is allowed to reach.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 2: Not every URL means "a website"</summary>
+                <p><code>file_get_contents()</code>, which this feature calls directly, understands more than
+                    <code>http://</code> and <code>https://</code>. A URL scheme can point at the local filesystem
+                    instead.
+                </p>
+            </details>
+            <details class="hint">
+                <summary>Hint 3: The answer</summary>
+                <p>Enter <code>file:///path/to/vulnerable/internal-notice.txt</code> (use the real path on your
+                    server) as the avatar URL. The page reports how many bytes it fetched &mdash; a local file, read
+                    because you asked the server to, not because you could reach it yourself.</p>
+            </details>
+            <details class="hint">
+                <summary>Why this was possible</summary>
+                <p>Nothing restricts which schemes or destinations this fetch will follow. See
+                    <a href="/vulnerabilities/ssrf.php">the write-up</a> for what a real deployment exposes this way,
+                    and how the fix restricts both the scheme and the destination IP.
+                </p>
+            </details>
+        </div>
+
+        <button class="accordion">XXE (XML External Entity Injection)</button>
+        <div class="panel">
+            <p>The account page can also import your posts from an XML file you upload.</p>
+            <p><strong>Goal:</strong> get the server to read a local file into one of your own posts.</p>
+            <details class="hint">
+                <summary>Hint 1: XML can define its own shorthand</summary>
+                <p>An XML file can declare custom "entities" in an optional <code>&lt;!DOCTYPE&gt;</code> block at
+                    the top &mdash; little find-and-replace rules the parser applies wherever that entity is used in
+                    the document.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 2: Entities can point outside the document</summary>
+                <p>A <code>SYSTEM</code> entity can point at a file path instead of just plain text. If the parser
+                    resolves it, that file's content takes the entity's place.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 3: The answer</summary>
+                <p>Build an XML file like this (swap in a real path on your server), then import it on
+                    <a href="account.php">Account</a>:
+                </p>
+                <pre><code>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE posts [ &lt;!ENTITY xxe SYSTEM "file:///path/to/vulnerable/internal-notice.txt"&gt; ]&gt;
+&lt;posts&gt;&lt;post&gt;&lt;msg&gt;&amp;xxe;&lt;/msg&gt;&lt;loc&gt;test&lt;/loc&gt;&lt;/post&gt;&lt;/posts&gt;</code></pre>
+                <p>Export your posts again afterward &mdash; the file's content is now sitting in a draft.</p>
+            </details>
+            <details class="hint">
+                <summary>Why this was possible</summary>
+                <p>The import parses your file with a flag that tells it to resolve entities, including the external
+                    one you declared. See <a href="/vulnerabilities/xxe.php">the write-up</a> for the one-line fix.
+                </p>
+            </details>
+        </div>
+
+        <button class="accordion">Broken Access Control</button>
+        <div class="panel">
+            <p>There's an admin panel on this site. Its link only shows up for admins &mdash; but is that the only
+                thing protecting it?</p>
+            <p><strong>Goal:</strong> see the admin panel without being an admin.</p>
+            <details class="hint">
+                <summary>Hint 1: Where would an admin page live?</summary>
+                <p>Sign in as any account (<code>guest</code> / <code>password</code> works) and look at the nav bar
+                    on your feed. See an admin link? Probably not &mdash; try guessing the URL anyway.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 2: Common paths</summary>
+                <p><code>/vulnerable/admin.php</code> is a reasonable guess for an admin panel on a site structured
+                    like this one.</p>
+            </details>
+            <details class="hint">
+                <summary>Hint 3: The answer</summary>
+                <p>Go directly to <a href="admin.php">admin.php</a> while signed in as any user. It loads &mdash; full
+                    user list and every draft in the system &mdash; with no admin check at all.</p>
+            </details>
+            <details class="hint">
+                <summary>Why this was possible</summary>
+                <p>The page only confirms you're logged in, not that you're an admin. Hiding the link in the nav
+                    changed what you could see, not what you could reach. See
+                    <a href="/vulnerabilities/broken-access-control.php">the write-up</a> for the fix.
+                </p>
+            </details>
+        </div>
     </main>
 
     <nav class="bottom-nav">

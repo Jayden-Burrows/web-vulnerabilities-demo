@@ -1,7 +1,5 @@
 # Live Demo
-
-A deliberately vulnerable PHP/SQLite web application built as a hands-on sandbox for
-learning how common web vulnerabilities are exploited — and how they are remediated.
+This project uses PHP and SQLite to provide a sandbox environment to learn how hackers exploit website vulnerabilities through first-hand experience.
 
 Themed as a simple social media app where users draft, create, and save posts.
 
@@ -79,21 +77,28 @@ Dependencies (`ramsey/uuid`) are committed in `vendor/`. If you change
 | Login (other) | Plain-text `auth_token` cookie, raw SQL errors shown | generic error messages, `HttpOnly` + `SameSite` session cookie, session ID regenerated |
 | Passwords | Unsalted SHA-256 | bcrypt via `password_hash()` / `password_verify()`; same error for invalid user or password; use dummy hash to prevent attackers from guessing usernames or passwords based on timing |
 | CSRF | No tokens | Per-session token in a hidden field or `X-CSRF-Token` header, checked with `hash_equals()`; logout is POST-only |
-| Output (XSS) | `<?= $viewedPost['msg'] ?>` and friends | Output encoding, every value goes through `e()` (a wrapper function for `htmlspecialchars` with `ENT_QUOTES`) |
-| Post IDs (IDOR) | Sequential integers | UUIDs to prevent guessing valid IDs |
-| Authorization (IDOR) | No ownership checks | `author_id = ?` for reading or modifying data |
-| Errors | `echo` / uncaught exceptions | JSON `{"success": false, "error": "..."}` with proper HTTP status; details go to `error_log` |
+| Output (XSS) | `<?= $viewedPost['msg'] ?>` and friends | Every value goes through `e()` (`htmlspecialchars` with `ENT_QUOTES`) |
+| Post IDs (IDOR) | Sequential integers | UUIDs (defense in depth only) |
+| Authorization (IDOR) | No ownership checks | `author_id = ?` in every draft read/update/publish/delete; saving requires a published post |
+| Errors | `echo` / uncaught exceptions | JSON `{"success": false, "error": "..."}` with a proper HTTP status; details go to `error_log` |
+| Avatar upload (file upload) | Browser-declared `Content-Type` and the uploader's own filename are trusted | `fileinfo` verifies the true MIME type, then the image is decoded and re-encoded through GD under a server-generated filename |
+| Avatar import (SSRF) | `file_get_contents($url)` with no restriction, including `file://` and internal addresses | Scheme restricted to http/https; hostname resolved and checked against `FILTER_FLAG_NO_PRIV_RANGE`/`FILTER_FLAG_NO_RES_RANGE`; response verified as a real image |
+| Post import (XXE) | `simplexml_load_string(..., LIBXML_NOENT)` resolves external entities in the uploaded XML | No `LIBXML_NOENT`; any `<!DOCTYPE` is rejected before parsing |
+| Admin panel | `require_login()` only; nav link hidden for non-admins, page itself unprotected | `require_login()` + `require_admin()`, checking a real `is_admin` flag; returns 403 |
 
-## Verification / Tests
+## Trying the attacks on a phone
 
-The test suite in `tests/` starts its own PHP server, resets `safe/data/` and
-`vulnerable/data/`, and verifies that each exploit **succeeds on the vulnerable site
-and fails on the secure site** — SQL injection, IDOR, stored XSS, CSRF, session
-isolation, and schema migration of stale databases. Requires PHP with `pdo_sqlite`
-and Python 3:
+Phone keyboards can quietly break payloads: iOS Smart Punctuation turns `--` into a long dash and straight quotes into curly ones, so a correct SQL injection or XSS payload fails for the wrong reason. Two things handle this:
+
+- `js/straight-input.js` runs on the attack-surface fields of both sites (login username, post text and location, the attacker-tools boxes). It turns off autocorrect and converts curly quotes, long dashes and ellipses back to ASCII as you type. It is a keyboard-compatibility aid for the demo, not a security control, and it runs on the `safe/` site too so both sites receive the same input.
+- `js/payload-chips.js` shows tap-to-fill payload buttons on the login pages once the visitor has opened "Hint 3: The answer" on the SQL injection panel. Until then they stay hidden so they don't give the answer away.
+
+## Tests
+
+The suite in `tests/` starts its own PHP server, resets `safe/data/`, `vulnerable/data/`, and both sites' `images/uploads/`, and checks that each exploit works on the vulnerable site and fails on the secure one (SQL injection, IDOR, stored XSS, CSRF, file upload, SSRF, XXE, broken access control, session isolation, and that a leftover database from an older schema gets rebuilt instead of breaking logins). It needs PHP with `pdo_sqlite` and Python 3 only:
 
 ```bash
-python3 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
 GitHub Actions (`.github/workflows/ci.yml`) runs these tests on every push, plus

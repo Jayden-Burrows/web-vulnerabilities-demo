@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true); // new session ID on login (prevents session fixation)
                 unset($_SESSION['csrf_token']); // add a fresh CSRF token for the new session
                 $_SESSION['user_id'] = $user['id'];
+                $_SESSION['is_admin'] = (bool) $user['is_admin'];
                 header('Location: /safe/posts/index.php');
                 exit;
             }

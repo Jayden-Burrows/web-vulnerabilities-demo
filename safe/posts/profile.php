@@ -18,6 +18,10 @@ require __DIR__ . '/logic/profile-logic.php';
 
     <header class="app-header">
         <a class="logo" href="/safe/">Live Demo</a>
+        <?php if (!empty($_SESSION['is_admin'])): ?>
+            <a href="../admin.php" class="logout">Admin</a>
+        <?php endif; ?>
+        <a href="../acount.php" class="logout">Account</a>
         <form method="post" action="../logout.php" class="logout-form"><?= csrf_field() ?><button type="submit"
                 class="logout">Logout</button></form>
     </header>

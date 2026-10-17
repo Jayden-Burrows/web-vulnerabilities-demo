@@ -30,11 +30,20 @@ function require_login(bool $asJson = false): void
     }
 }
 
+// Protect admin-only endpoints on the website.
+function require_admin(): void
+{
+    if (empty($_SESSION['is_admin'])) {
+        http_response_code(403);
+        exit('403 Forbidden: admin access required.');
+    }
+}
+
 // Protect data by attaching a secret token to this user's session. When a request is made, 
 // require_csrf() is used in the backend logic to ensure that the csrf_token is attached.
-// Otherwise, it won't allow the request to go 
-// change any data. A forged request from another site can ride along on the session cookie, 
-// but it can't read the CSRF token, and therefore can't include it.
+// Otherwise, it won't allow the request to change any data.
+// A forged request from another site can still use the session cookie, 
+// but it can't read the CSRF token and thus can't include it.
 function csrf_token(): string
 {
     start_secure_session();
