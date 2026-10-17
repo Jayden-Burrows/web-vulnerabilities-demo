@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/session.php';
 
-// See safe/db.php for why this exists.
-const DB_SCHEMA_VERSION = 1;
+// Helps to ensure deletion of old data files
+// that could cause bugs as the schema updates
+const DB_SCHEMA_VERSION = 2;
 
 function get_db(): PDO
 {
@@ -46,7 +47,8 @@ function seed_db(PDO $pdo): void
             username TEXT NOT NULL,
             email TEXT NOT NULL,
             pass TEXT NOT NULL,
-            profile_pic TEXT NOT NULL DEFAULT '/images/profile_placeholder.png'
+            profile_pic TEXT NOT NULL DEFAULT '/images/profile_placeholder.png',
+            is_admin INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE posts (
@@ -86,6 +88,11 @@ function seed_db(PDO $pdo): void
     foreach ($users as $u) {
         $stmt->execute($u);
     }
+
+    // Add an admin account for the broken access control exercise
+    $stmt = $pdo->prepare('INSERT INTO users (display_name, username, email, pass, profile_pic, is_admin) VALUES (?, ?, ?, ?, ?, 1)');
+    $stmt->execute(['Admin Account', 'admin_demo', 'admin@example.test', hash('sha256', 'password'), '/images/profile_placeholder.png']);
+
 
     $posts = [
         [1, '/images/uploads/beach.jpg', 'Sunny day down at the beach.', 'Myrtle Beach, South Carolina, USA', '02-03-2024', 1],
@@ -173,6 +180,15 @@ function current_user_id(): int
     start_vuln_session();
 
     return (int) $_SESSION['user_id'] ?? 0;
+}
+
+// protects admin.php by checking if the current user is admin
+function is_admin_user(PDO $pdo, int $userId): bool
+{
+    $stmt = $pdo->prepare('SELECT is_admin FROM users WHERE id = ?');
+    $stmt->execute([$userId]);
+
+    return (bool) $stmt->fetchColumn();
 }
 
 function get_visible_posts(PDO $pdo, array $filters = []): array

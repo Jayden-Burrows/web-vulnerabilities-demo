@@ -1,0 +1,1 @@
+INTERNAL ONLY - staging database credentials rotate every 90 days. Contact platform-team.

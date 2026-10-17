@@ -34,11 +34,13 @@
                     <span class="cve-badge">CVSS v3.1: 7.1 - High</span>
                     <span class="cve-meta">Published January 7, 2025</span>
                 </div>
-                <p>A CSRF vulnerability was reported in the "Affiliate Disclosure Statement" WordPress plugin
-                    (through version 0.3). The plugin performed a state-changing action without verifying that the
-                    request genuinely came from the site's own forms, so an attacker could craft a page that, when
+                <p>A CSRF vulnerability in the "Affiliate Disclosure Statement" WordPress plugin
+                    (through version 0.3) was reported through Patchstack, an open-source security platform for
+                    vulnerability intelligence and virtual patching. The plugin performed a state-changing action
+                    without verifying that the request genuinely came from the site's own forms, so an attacker could
+                    craft a page that, when
                     visited by a logged-in administrator, submitted the forged request on their behalf. Patchstack
-                    rated it high severity given it required no authentication of its own and only low complexity to
+                    rated it high severity as the request required no authentication of its own and only low complexity to
                     pull off.</p>
             </div>
 

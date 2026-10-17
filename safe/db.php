@@ -10,10 +10,10 @@ use Ramsey\Uuid\Uuid;
 // rainbow table attacks
 const BCRYPT_COST = 12;
 
-// Bump this whenever seed_db()'s table shape or seed data changes, so a database file left
+// Increment this whenever seed_db()'s table shape or seed data changes, so a database file left
 // over from an older version of this project gets rebuilt instead of causing confusing bugs
 // (an older file here used plain SHA-256 passwords, which made every login fail).
-const DB_SCHEMA_VERSION = 2;
+const DB_SCHEMA_VERSION = 3;
 
 // Use a hash for a random password, so when a username doesn't exist, this password can be compared 
 // in password_verify() to prevent attackers from being able to guess valid usernames 
@@ -62,7 +62,8 @@ function seed_db(PDO $pdo): void
             username TEXT NOT NULL UNIQUE,
             email TEXT NOT NULL,
             pass TEXT NOT NULL,
-            profile_pic TEXT NOT NULL DEFAULT '/images/profile_placeholder.png'
+            profile_pic TEXT NOT NULL DEFAULT '/images/profile_placeholder.png',
+            is_admin INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE posts (
@@ -103,6 +104,9 @@ function seed_db(PDO $pdo): void
     foreach ($users as $u) {
         $stmt->execute($u);
     }
+
+    $stmt = $pdo->prepare('INSERT INTO users (display_name, username, email, pass, profile_pic, is_admin) VALUES (?, ?, ?, ?, ?, 1)');
+    $stmt->execute(['Admin Account', 'admin_demo', 'admin@example.test', '$2y$12$7meIbG0XXiUiUwK0tSaaR.KzP26.O/P1LUv1GJqp5ipJtVBMnXWdm', '/images/profile_placeholder.png']);
 
     $posts = [
         [1, '/images/uploads/beach.jpg', 'Sunny day down at the beach.', 'Myrtle Beach, South Carolina, USA', '02-03-2024', 1],
@@ -191,7 +195,7 @@ function seed_db(PDO $pdo): void
 // Checks the username and password by comparing the password in php instead of in the SQL database
 function authenticate(PDO $pdo, string $username, string $password): ?array
 {
-    $stmt = $pdo->prepare('SELECT id, username, pass FROM users WHERE username = ?');
+    $stmt = $pdo->prepare('SELECT id, username, pass, is_admin FROM users WHERE username = ?');
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -214,7 +218,7 @@ function authenticate(PDO $pdo, string $username, string $password): ?array
         $upgrade->execute([password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]), $user['id']]);
     }
 
-    return ['id' => (int) $user['id'], 'username' => $user['username']];
+    return ['id' => (int) $user['id'], 'username' => $user['username'], 'is_admin' => (bool) $user['is_admin']];
 }
 function current_user_id(): int
 {

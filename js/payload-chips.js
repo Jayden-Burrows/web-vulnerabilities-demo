@@ -1,6 +1,3 @@
-// Tap-to-fill payload buttons for the SQL injection for the login pags
-// Certain characters on a keyboard is difficult and will often autocorrect, so once
-// a user has opened "Hint 3" on the SQL injection panel, the login pages will show buttons that fill in the working payloads.
 
 (function () {
     const KEY = 'demo.sqli.answerSeen';

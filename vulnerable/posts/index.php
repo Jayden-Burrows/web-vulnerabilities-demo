@@ -30,6 +30,10 @@ function posts_query(array $overrides = []): string
 
     <header class="app-header">
         <a class="logo" href="/">Live Demo</a>
+        <?php if (is_admin_user($pdo, $userId)): ?>
+            <a href="../admin.php" class="logout">Admin</a>
+        <?php endif; ?>
+        <a href="../account.php" class="logout">Account</a>
         <a href="../logout.php" class="logout">Logout</a>
     </header>
 

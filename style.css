@@ -2040,7 +2040,7 @@ body.theme-home .card.safe {
     margin-top: 0.5rem;
 }
 
-.compare > div {
+.compare>div {
     padding: 1rem 1.25rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
@@ -2268,4 +2268,64 @@ body.theme-home .card.safe {
     color: var(--color-code-text);
     font-size: 0.82em;
     white-space: pre;
+}
+
+.account-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--width-form);
+    margin: 0 auto;
+    padding: var(--space-4) var(--space-4) calc(var(--bottom-nav-height) + var(--space-12));
+}
+
+.account-section {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+}
+
+.account-section h2 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-xl);
+}
+
+.account-section h3 {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+}
+
+.account-section form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.account-section input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.account-avatar-preview {
+    display: block;
+    width: 84px;
+    height: 84px;
+    margin-bottom: var(--space-3);
+    object-fit: cover;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+}
+
+.account-message {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
 }

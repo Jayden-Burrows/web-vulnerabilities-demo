@@ -31,15 +31,13 @@
             <div class="cve-box">
                 <div class="cve-box-head">
                     <span class="cve-id">CVE-2025-43803</span>
-                    <span class="cve-badge cvss-medium">CVSS v3.1: 5.3 - Medium</span>
+                    <span class="cve-badge cvss-medium">CVSS v4.0: 6.9 - Medium</span>
                     <span class="cve-meta">Disclosed September 19, 2025</span>
                 </div>
-                <p>An IDOR vulnerability was found in the Contacts Center widget shipped with Liferay Portal and Liferay
-                    DXP. The
-                    widget accepted an <code>entryId</code> parameter identifying a contact record and returned that
-                    contact's name and email address without checking whether the requester was allowed to see it.
-                    A remote attacker could step through entry IDs and read other people's contact details with no
-                    special privileges beyond reaching the widget.</p>
+                <p>Liferay Inc. disclosed an IDOR vulnerability with the Contacts Center widget in their Liferay Portal.
+                    This vulnerability allowed remote attackers to modify the <code>entryId</code> parameter of the
+                    Contacts Center widget to view restricted contact information.
+                </p>
             </div>
 
             <h2>Description</h2>

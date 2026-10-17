@@ -1,4 +1,4 @@
-# web-vulnerabilities-demo
+# Live Demo
 This project uses PHP and SQLite to provide a sandbox environment to learn how hackers exploit website vulnerabilities through first-hand experience.
 
 The website is themed after a simple social media app where users can draft, create, and save posts.
@@ -53,6 +53,10 @@ Dependencies (`ramsey/uuid`) are committed in `vendor/`. If you change `composer
 | Post IDs (IDOR) | Sequential integers | UUIDs (defense in depth only) |
 | Authorization (IDOR) | No ownership checks | `author_id = ?` in every draft read/update/publish/delete; saving requires a published post |
 | Errors | `echo` / uncaught exceptions | JSON `{"success": false, "error": "..."}` with a proper HTTP status; details go to `error_log` |
+| Avatar upload (file upload) | Browser-declared `Content-Type` and the uploader's own filename are trusted | `fileinfo` verifies the true MIME type, then the image is decoded and re-encoded through GD under a server-generated filename |
+| Avatar import (SSRF) | `file_get_contents($url)` with no restriction, including `file://` and internal addresses | Scheme restricted to http/https; hostname resolved and checked against `FILTER_FLAG_NO_PRIV_RANGE`/`FILTER_FLAG_NO_RES_RANGE`; response verified as a real image |
+| Post import (XXE) | `simplexml_load_string(..., LIBXML_NOENT)` resolves external entities in the uploaded XML | No `LIBXML_NOENT`; any `<!DOCTYPE` is rejected before parsing |
+| Admin panel | `require_login()` only; nav link hidden for non-admins, page itself unprotected | `require_login()` + `require_admin()`, checking a real `is_admin` flag; returns 403 |
 
 ## Trying the attacks on a phone
 
@@ -63,10 +67,10 @@ Phone keyboards can quietly break payloads: iOS Smart Punctuation turns `--` int
 
 ## Tests
 
-The suite in `tests/` starts its own PHP server, resets `safe/data/` and `vulnerable/data/`, and checks that each exploit works on the vulnerable site and fails on the secure one (SQL injection, IDOR, stored XSS, CSRF, session isolation, and that a leftover database from an older schema gets rebuilt instead of breaking logins). It needs PHP with `pdo_sqlite` and Python 3 only:
+The suite in `tests/` starts its own PHP server, resets `safe/data/`, `vulnerable/data/`, and both sites' `images/uploads/`, and checks that each exploit works on the vulnerable site and fails on the secure one (SQL injection, IDOR, stored XSS, CSRF, file upload, SSRF, XXE, broken access control, session isolation, and that a leftover database from an older schema gets rebuilt instead of breaking logins). It needs PHP with `pdo_sqlite` and Python 3 only:
 
 ```bash
-python3 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
 GitHub Actions (`.github/workflows/ci.yml`) runs these tests on every push, plus `composer audit` and a Semgrep scan of `safe/`.
