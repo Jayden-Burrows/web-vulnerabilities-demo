@@ -19,6 +19,12 @@
         </nav>
     </header>
     <main class="home">
+        <div class="cve-box">
+            <strong>Security notice:</strong> two critical PHP remote code execution flaws
+            (CVE-2026-109618 and CVE-2026-109619, CVSS 4.0 score 9.2) were disclosed on October 21, 2026.
+            This hosted demo isn't affected, but if you run it yourself, update PHP.
+            <a href="/vulnerabilities/php-advisory.php">Learn more.</a>
+        </div>
         <section class="hero">
             <p class="hero-kicker">Hands-on web security</p>
             <h1>Exploit it. Then see how it's patched.</h1>
@@ -100,6 +106,7 @@
                     <span class="topic-link">How it works &rarr;</span>
                 </a>
             </div>
+
         </section>
 
         <div class="section-head">

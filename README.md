@@ -56,7 +56,7 @@ image on every push.
 
 ## Running it locally
 
-Requires PHP 8.1+ with `pdo_sqlite`. Clone this repo, and from this folder, run:
+Requires PHP 8.2.35+ (or 8.3.36+, 8.4.27+, 8.5.12+) with `pdo_sqlite`. Older versions have unpatched critical vulnerabilities (see `vulnerabilities/php-advisory.php`). Clone this repo, and from this folder, run:
 
 ```bash
 php -S localhost:8080
