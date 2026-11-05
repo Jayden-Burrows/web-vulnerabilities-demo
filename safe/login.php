@@ -62,6 +62,7 @@ if (isset($_SESSION['user_id'])) {
 <body class="theme-safe">
 
     <div class="login-page">
+
         <div class="login-side-content">
             <a href="index.php" class="login-side-link">Live Demo</a>
             <p class="login-side-text">This is the secure version of the login form. It uses a prepared
@@ -130,6 +131,7 @@ if (isset($_SESSION['user_id'])) {
             toggleIcon.classList.toggle('fa-eye-slash', !showing);
         }
     </script>
+    <?php include __DIR__ . '/../tools/attacker-tools.php'; ?>
 </body>
 
 </html>

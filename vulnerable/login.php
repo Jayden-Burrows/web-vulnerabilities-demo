@@ -61,6 +61,17 @@ if (isset($_SESSION['user_id']) && !$loginResult) {
 
 <body class="theme-vuln">
 
+    <header class="app-header">
+        <a class="logo" href="/">Live Demo</a>
+        <nav class="app-header-nav">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a class="login" href="/vulnerable/logout.php">Logout</a>
+            <?php else: ?>
+                <a class="login" href="login.php">Login</a>
+            <?php endif; ?>
+        </nav>
+    </header>
+
     <div class="login-page">
         <div class="login-side-content">
             <a href="index.php" class="login-side-link">Live Demo</a>
