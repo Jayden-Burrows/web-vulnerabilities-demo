@@ -156,16 +156,19 @@ body::after {
 }
 
 body.theme-safe::after {
-    background-image:
-        linear-gradient(var(--color-border-strong) 1px, transparent 1px),
-        linear-gradient(90deg, var(--color-border-strong) 1px, transparent 1px);
-    background-size: 42px 42px;
-    opacity: 0.07;
+    background-color: #E5E5F7;
+    opacity: 0.2;
+    background-image: radial-gradient(circle farthest-side at 0% 50%, #E5E5F7 23.5%, transparent 0), radial-gradient(circle farthest-side at 0% 50%, #444CF7 24%, transparent 0), linear-gradient(#E5E5F7 14%, transparent 0, transparent 85%, #E5E5F7 0), linear-gradient(150deg, #E5E5F7 24%, #444CF7 0 26%, transparent 0 74%, #444CF7 0 76%, #E5E5F7 0), linear-gradient(30deg, #E5E5F7 24%, #444CF7 0 26%, transparent 0 74%, #444CF7 0 76%, #E5E5F7 0), linear-gradient(90deg, #444CF7 1.6%, #E5E5F7 0 98.4%, #444CF7 0);
+    background-position: 16px 23px, 14px 23px, 0 0, 0 0, 0 0, 0 0;
+    background-size: 30px 45px;
 }
 
 body.theme-vuln::after {
-    background-image: repeating-linear-gradient(135deg, var(--color-border-strong) 0 2px, transparent 2px 26px);
-    opacity: 0.06;
+    background-color: var(--color-bg);
+    opacity: 0.6;
+    background-image: radial-gradient(circle, var(--color-text-muted) 1.6px, transparent 1.6px), radial-gradient(circle, var(--color-text-muted) 1.6px, transparent 1.6px);
+    background-size: 6.5px 26px, 26px 6.5px;
+    background-position: -5px -20px, -20px -5px;
 }
 
 @keyframes bg-drift {
@@ -232,7 +235,7 @@ select {
     border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-md);
     background: var(--color-surface);
-    color: inherit;
+    color: var(--color-text);
     font: inherit;
     font-size: max(16px, 1rem);
     transition: border-color var(--transition), box-shadow var(--transition);
@@ -712,9 +715,8 @@ main:not([class]) small {
     align-items: center;
     justify-content: center;
     padding: var(--space-6);
-    background: linear-gradient(-45deg, var(--primary-600), var(--violet-600), var(--green-600), var(--primary-700));
-    background-size: 400% 400%;
-    animation: gradient 8s ease infinite;
+    background-color: var(--primary-700);
+    background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--primary-700) 10px), repeating-linear-gradient(var(--violet-600), var(--primary-700));
     color: var(--color-on-dark);
     text-align: center;
 }
@@ -1233,8 +1235,12 @@ main:not([class]) small {
 }
 
 .create-modal-option i {
-    color: inherit;
+    color: var(--color-on-dark);
     font-size: inherit;
+}
+
+.create-modal-option i::before {
+    color: var(--color-on-dark);
 }
 
 

@@ -1,5 +1,5 @@
 # From the official PHP 8.3 Apache image
-FROM php:8.3-apache
+FROM php:8.3.36-apache
 
 # Install dependencies required for pdo_sqlite
 RUN apt-get update && apt-get install -y \
